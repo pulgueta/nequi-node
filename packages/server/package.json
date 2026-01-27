@@ -1,0 +1,43 @@
+{
+  "name": "@pulgueta/nequi-node",
+  "description": "SDK de la comunidad de Nequi para Node.js",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Andrés Rodríguez",
+    "email": "roariasaf@gmail.com",
+    "url": "https://github.com/pulgueta"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "nequi",
+    "sdk",
+    "nequi-sdk",
+    "nequi-node-sdk",
+    "bancolombia",
+    "pagos",
+    "pagos-bancolombia"
+  ],
+  "homepage": "https://github.com/pulgueta/nequi-node-sdk",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pulgueta/nequi-node-sdk.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pulgueta/nequi-node-sdk/issues"
+  },
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "ci": "bun lint && bun format && bun run build",
+    "build:server": "cd packages/server && bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}

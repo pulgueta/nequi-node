@@ -1,34 +1,40 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
-  "linter": {
-    "enabled": false
+  "$schema": "https://biomejs.dev/schemas/2.3.13/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "main",
+    "root": "."
   },
   "formatter": {
     "enabled": true,
-    "indentWidth": 2,
     "indentStyle": "space",
-    "lineWidth": 120,
-    "lineEnding": "lf"
+    "indentWidth": 2,
+    "includes": ["packages/**/*.ts"]
   },
-  "json": {
-    "formatter": {
-      "enabled": true,
-      "indentWidth": 2,
-      "indentStyle": "space",
-      "lineWidth": 120,
-      "lineEnding": "lf"
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "useImportType": "warn"
+      },
+      "suspicious": {
+        "noUnknownAtRules": "off"
+      }
     }
   },
   "javascript": {
     "formatter": {
+      "quoteStyle": "double",
+      "indentWidth": 2
+    }
+  },
+  "json": {
+    "formatter": {
       "enabled": true,
-      "indentWidth": 2,
-      "indentStyle": "space",
-      "lineWidth": 120,
-      "lineEnding": "lf"
+      "indentWidth": 2
     }
   }
 }
