@@ -9,12 +9,6 @@ import {
 import { buildRequestMessage } from "@/utils/builders";
 import { safeParse } from "@/utils/validation";
 
-/**
- * @name Pagos con notificación push
- * @description A través de este servicio puedes recibir el pago de tus clientes que tengan una cuenta Nequi, ya sea en tu página web o en tu aplicación.
- *
- * Este servicio envía una notificación a tu cliente al centro de notificaciones de la app Nequi, indicando la información del pago a realizar, dicha notificación podrá ser aceptada o cancelada por tu cliente. En caso de ser aceptada se debitará la cuenta del usuario Nequi y todo el dinero que recibas por tus ventas se enviará al siguiente día a tu cuenta Nequi o Bancolombia.
- */
 export class PushPayment {
   private readonly clientId: string;
 
@@ -22,11 +16,6 @@ export class PushPayment {
     this.clientId = nequi.getClientId();
   }
 
-  /**
-   * Create a new push payment request (unregistered payment)
-   * @see PUSH-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async createPayment(unregisteredPaymentRQ: unknown) {
     const [error, validated] = safeParse(
       UnregisteredPaymentRQSchema,
@@ -57,11 +46,6 @@ export class PushPayment {
     );
   }
 
-  /**
-   * Cancel an unregistered payment request
-   * @see PUSH-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async cancel(cancelUnregisteredPaymentRQ: unknown) {
     const [error, validated] = safeParse(
       CancelUnregisteredPaymentRQSchema,
@@ -92,11 +76,6 @@ export class PushPayment {
     );
   }
 
-  /**
-   * Get the status of a push payment
-   * @see PUSH-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async getStatus(getStatusPaymentRQ: unknown) {
     const [error, validated] = safeParse(
       GetStatusPaymentRQSchema,
@@ -127,11 +106,6 @@ export class PushPayment {
     );
   }
 
-  /**
-   * Revert a push payment transaction
-   * @see PUSH-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async revertTransaction(reversionRQ: unknown) {
     const [error, validated] = safeParse(
       RevertTransactionRQSchema,

@@ -23,5 +23,3 @@ export type ErrorResponse = {
   message: string;
   name: ERROR_CODE_KEY;
 };
-
-export type Tag = { name: string; value: string };

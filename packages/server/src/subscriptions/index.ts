@@ -9,10 +9,6 @@ import {
 import { buildRequestMessage } from "@/utils/builders";
 import { safeParse } from "@/utils/validation";
 
-/**
- * @name Suscripciones
- * @description Servicio para suscribirse y realizar el pago de la suscripcion siendo cliente Nequi.
- */
 export class Subscription {
   private readonly clientId: string;
 
@@ -20,11 +16,6 @@ export class Subscription {
     this.clientId = nequi.getClientId();
   }
 
-  /**
-   * Process an automatic subscription payment
-   * @see SUBSCRIPTIONS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async automaticPayment(automaticPaymentRQ: unknown) {
     const [error, validated] = safeParse(
       AutomaticPaymentRQSchema,
@@ -55,11 +46,6 @@ export class Subscription {
     );
   }
 
-  /**
-   * Create a new subscription
-   * @see SUBSCRIPTIONS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async createSubscription(newSubscriptionRQ: unknown) {
     const [error, validated] = safeParse(
       NewSubscriptionRQSchema,
@@ -90,11 +76,6 @@ export class Subscription {
     );
   }
 
-  /**
-   * Get subscription details
-   * @see SUBSCRIPTIONS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async getSubscription(getSubscriptionRQ: unknown) {
     const [error, validated] = safeParse(
       GetSubscriptionRQSchema,
@@ -125,11 +106,6 @@ export class Subscription {
     );
   }
 
-  /**
-   * Reverse a subscription payment transaction
-   * @see SUBSCRIPTIONS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async reverseTransaction(reversionRQ: unknown) {
     const [error, validated] = safeParse(
       ReverseSubscriptionTransactionRQSchema,

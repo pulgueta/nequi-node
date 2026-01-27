@@ -1,20 +1,12 @@
 import type { output } from "zod";
 import { z } from "zod";
 
-// ============================================================================
-// Destination Schema (shared across all services)
-// ============================================================================
-
 export const DestinationSchema = z.object({
   ServiceName: z.string(),
   ServiceOperation: z.string(),
   ServiceRegion: z.string(),
   ServiceVersion: z.string(),
 });
-
-// ============================================================================
-// Request Header Schema
-// ============================================================================
 
 export const RequestHeaderSchema = z.object({
   Channel: z.string(),
@@ -24,18 +16,10 @@ export const RequestHeaderSchema = z.object({
   Destination: DestinationSchema,
 });
 
-// ============================================================================
-// Response Status Schema
-// ============================================================================
-
 export const StatusSchema = z.object({
   StatusCode: z.string(),
   StatusDesc: z.string(),
 });
-
-// ============================================================================
-// Response Header Schema
-// ============================================================================
 
 export const ResponseHeaderSchema = z.object({
   Channel: z.string(),
@@ -45,10 +29,6 @@ export const ResponseHeaderSchema = z.object({
   ClientID: z.string(),
   Destination: DestinationSchema.optional(),
 });
-
-// ============================================================================
-// Base Response Envelope Schema Factory
-// ============================================================================
 
 export const createResponseSchema = <T extends z.ZodTypeAny>(bodySchema: T) =>
   z.object({
@@ -60,10 +40,6 @@ export const createResponseSchema = <T extends z.ZodTypeAny>(bodySchema: T) =>
     }),
   });
 
-// ============================================================================
-// Base Request Envelope Schema Factory
-// ============================================================================
-
 export const createRequestSchema = <T extends z.ZodTypeAny>(bodySchema: T) =>
   z.object({
     RequestMessage: z.object({
@@ -74,11 +50,4 @@ export const createRequestSchema = <T extends z.ZodTypeAny>(bodySchema: T) =>
     }),
   });
 
-// ============================================================================
-// Inferred Types (using verbatim module syntax)
-// ============================================================================
-
 export type Destination = output<typeof DestinationSchema>;
-export type RequestHeader = output<typeof RequestHeaderSchema>;
-export type ResponseHeader = output<typeof ResponseHeaderSchema>;
-export type Status = output<typeof StatusSchema>;

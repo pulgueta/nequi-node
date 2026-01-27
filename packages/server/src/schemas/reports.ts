@@ -3,10 +3,6 @@ import { z } from "zod";
 
 import { createResponseSchema } from "./common";
 
-// ============================================================================
-// Get Reports - Request Schema
-// ============================================================================
-
 export const ReportFormatSchema = z.enum(["json", "csv", "pdf"]);
 
 export const GetReportsRQSchema = z.object({
@@ -15,10 +11,6 @@ export const GetReportsRQSchema = z.object({
   endDate: z.string().min(1, "endDate is required"),
   format: ReportFormatSchema,
 });
-
-// ============================================================================
-// Get Reports - Response Schema
-// ============================================================================
 
 export const ReportTransactionSchema = z.object({
   buyerLastName: z.string(),
@@ -47,11 +39,4 @@ export const GetReportsRSSchema = z.object({
 export const GetReportsResponseSchema =
   createResponseSchema(GetReportsRSSchema);
 
-// ============================================================================
-// Inferred Types (using verbatim module syntax)
-// ============================================================================
-
-export type ReportFormat = output<typeof ReportFormatSchema>;
 export type GetReportsRQ = output<typeof GetReportsRQSchema>;
-export type GetReportsResponse = output<typeof GetReportsResponseSchema>;
-export type ReportTransaction = output<typeof ReportTransactionSchema>;

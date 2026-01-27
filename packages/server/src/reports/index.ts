@@ -4,10 +4,6 @@ import { GetReportsRQSchema } from "@/schemas/reports";
 import { buildRequestMessage } from "@/utils/builders";
 import { safeParse } from "@/utils/validation";
 
-/**
- * @name Servicios de reportes
- * @description Servicio para consultar la información de las transacciones.
- */
 export class Reports {
   private readonly clientId: string;
 
@@ -15,11 +11,6 @@ export class Reports {
     this.clientId = nequi.getClientId();
   }
 
-  /**
-   * Get transaction reports for a commerce
-   * @see REPORTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async getReports(getReportsRQ: unknown) {
     const [error, validated] = safeParse(GetReportsRQSchema, getReportsRQ);
 

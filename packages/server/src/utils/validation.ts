@@ -2,9 +2,6 @@ import { z } from "zod";
 import { NequiError } from "@/error";
 import type { SdkResponse } from "@/types";
 
-/**
- * Handles Zod validation errors and converts them to NequiError format
- */
 export const handleValidationError = (error: unknown) => {
   if (error instanceof z.ZodError) {
     const formattedErrors = error.issues
@@ -33,9 +30,6 @@ export const handleValidationError = (error: unknown) => {
   });
 };
 
-/**
- * Safely parses data with a Zod schema, returning a tuple [error, data]
- */
 export const safeParse = <T extends z.ZodTypeAny>(
   schema: T,
   data: unknown,
@@ -49,7 +43,4 @@ export const safeParse = <T extends z.ZodTypeAny>(
   return [handleValidationError(result.error), null] as const;
 };
 
-/**
- * Checks if the response status indicates success (StatusCode === "0")
- */
 export const isSuccessResponse = (statusCode: string) => statusCode === "0";

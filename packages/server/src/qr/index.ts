@@ -8,10 +8,6 @@ import {
 import { buildRequestMessage } from "@/utils/builders";
 import { safeParse } from "@/utils/validation";
 
-/**
- * @name Pagos con QR code
- * @description Servicio para integrar APIs con comercios electrónicos y recibir pagos con Nequi a través de QR dinámicos.
- */
 export class GenerateQR {
   private readonly clientId: string;
 
@@ -19,11 +15,6 @@ export class GenerateQR {
     this.clientId = nequi.getClientId();
   }
 
-  /**
-   * Generate a QR code for payment
-   * @see QR-CODE-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async createQR(generateCodeQRRQ: unknown) {
     const [error, validated] = safeParse(
       GenerateCodeQRRQSchema,
@@ -51,12 +42,6 @@ export class GenerateQR {
     });
   }
 
-  /**
-   * Get the status of a QR payment
-   * @param qrValue - The QR code string value returned from generateCodeQR
-   * @see QR-CODE-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async getStatus(qrValue: unknown) {
     const [error, validated] = safeParse(GetQRStatusPaymentRQSchema, {
       qrValue,
@@ -83,11 +68,6 @@ export class GenerateQR {
     });
   }
 
-  /**
-   * Reverse a QR payment transaction
-   * @see QR-CODE-PAYMENTS.md for documentation
-   * @returns Tuple [error, data] - always check error first
-   */
   async revert(reversionRQ: unknown) {
     const [error, validated] = safeParse(
       ReverseQRTransactionRQSchema,
