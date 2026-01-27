@@ -18,12 +18,13 @@ export class Reports {
   /**
    * Get transaction reports for a commerce
    * @see REPORTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async getReports(getReportsRQ: unknown) {
-    const validated = safeParse(GetReportsRQSchema, getReportsRQ);
+    const [error, validated] = safeParse(GetReportsRQSchema, getReportsRQ);
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -35,7 +36,7 @@ export class Reports {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { getReportsRQ: validated.data },
+      { getReportsRQ: validated },
     );
 
     return this.nequi.post(

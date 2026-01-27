@@ -25,15 +25,16 @@ export class PushPayment {
   /**
    * Create a new push payment request (unregistered payment)
    * @see PUSH-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async createPayment(unregisteredPaymentRQ: unknown) {
-    const validated = safeParse(
+    const [error, validated] = safeParse(
       UnregisteredPaymentRQSchema,
       unregisteredPaymentRQ,
     );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -45,7 +46,7 @@ export class PushPayment {
         ServiceRegion: "C001",
         ServiceVersion: "1.2.0",
       },
-      { unregisteredPaymentRQ: validated.data },
+      { unregisteredPaymentRQ: validated },
     );
 
     return this.nequi.post(
@@ -59,15 +60,16 @@ export class PushPayment {
   /**
    * Cancel an unregistered payment request
    * @see PUSH-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async cancel(cancelUnregisteredPaymentRQ: unknown) {
-    const validated = safeParse(
+    const [error, validated] = safeParse(
       CancelUnregisteredPaymentRQSchema,
       cancelUnregisteredPaymentRQ,
     );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -79,7 +81,7 @@ export class PushPayment {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { cancelUnregisteredPaymentRQ: validated.data },
+      { cancelUnregisteredPaymentRQ: validated },
     );
 
     return this.nequi.post(
@@ -93,12 +95,16 @@ export class PushPayment {
   /**
    * Get the status of a push payment
    * @see PUSH-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async getStatus(getStatusPaymentRQ: unknown) {
-    const validated = safeParse(GetStatusPaymentRQSchema, getStatusPaymentRQ);
+    const [error, validated] = safeParse(
+      GetStatusPaymentRQSchema,
+      getStatusPaymentRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -110,7 +116,7 @@ export class PushPayment {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { getStatusPaymentRQ: validated.data },
+      { getStatusPaymentRQ: validated },
     );
 
     return this.nequi.post(
@@ -124,12 +130,16 @@ export class PushPayment {
   /**
    * Revert a push payment transaction
    * @see PUSH-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async revertTransaction(reversionRQ: unknown) {
-    const validated = safeParse(RevertTransactionRQSchema, reversionRQ);
+    const [error, validated] = safeParse(
+      RevertTransactionRQSchema,
+      reversionRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -141,7 +151,7 @@ export class PushPayment {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { reversionRQ: validated.data },
+      { reversionRQ: validated },
     );
 
     return this.nequi.post(

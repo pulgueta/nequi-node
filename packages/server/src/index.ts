@@ -18,7 +18,7 @@ export { Reports } from "./reports";
 export * from "./schemas";
 export { Subscription } from "./subscriptions";
 // Core types
-export type { FetchResponse, NequiOptions } from "./types";
+export type { NequiOptions, SdkResponse } from "./types";
 
 // Utilities (for advanced usage)
 export { buildRequestHeader, buildRequestMessage } from "./utils/builders";

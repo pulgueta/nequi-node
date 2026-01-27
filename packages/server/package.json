@@ -42,8 +42,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --target node && bun run build:types",
-    "build:types": "tsc --emitDeclarationOnly --declaration --outDir ./dist",
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --minify",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -25,12 +25,16 @@ export class Dispersions {
   /**
    * Disperse funds to a Nequi account
    * @see DISPERTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async createDispersion(disperseFundsRQ: unknown) {
-    const validated = safeParse(DisperseFundsRQSchema, disperseFundsRQ);
+    const [error, validated] = safeParse(
+      DisperseFundsRQSchema,
+      disperseFundsRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -42,7 +46,7 @@ export class Dispersions {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { disperseFundsRQ: validated.data },
+      { disperseFundsRQ: validated },
     );
 
     return this.nequi.post(
@@ -56,12 +60,16 @@ export class Dispersions {
   /**
    * Reverse a dispersion transaction
    * @see DISPERTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async reverseDispersion(reverseDispersionRQ: unknown) {
-    const validated = safeParse(ReverseDispersionRQSchema, reverseDispersionRQ);
+    const [error, validated] = safeParse(
+      ReverseDispersionRQSchema,
+      reverseDispersionRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -73,7 +81,7 @@ export class Dispersions {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { reverseDispersionRQ: validated.data },
+      { reverseDispersionRQ: validated },
     );
 
     return this.nequi.post(

@@ -7,7 +7,7 @@ import { PushPayment } from "@/payments";
 import { GenerateQR } from "@/qr";
 import { Reports } from "@/reports";
 import { Subscription } from "@/subscriptions";
-import type { FetchResponse } from "@/types";
+import type { SdkResponse } from "@/types";
 import { NequiOptionsSchema } from "@/types";
 import { handleValidationError } from "@/utils/validation";
 
@@ -58,14 +58,11 @@ export class Nequi {
     return authenticate;
   }
 
-  async request<T>(
-    url: string,
-    options: RequestInit,
-  ): Promise<FetchResponse<T>> {
+  async request<T>(url: string, options: RequestInit): Promise<SdkResponse<T>> {
     const auth = await this.auth();
 
     if (NequiError.isNequiError(auth)) {
-      return { data: null, error: auth };
+      return [auth, null] as const;
     }
 
     try {
@@ -84,34 +81,31 @@ export class Nequi {
           const errText = await req.text();
           const errJson = JSON.parse(errText);
 
-          return {
-            data: null,
-            error: NequiError.from({
+          return [
+            NequiError.from({
               name:
                 req.status === 403 ? "invalid_api_Key" : "application_error",
               message: errJson?.message || req.statusText,
               status: req.status,
             }),
-          };
+            null,
+          ] as const;
         } catch {
-          return {
-            data: null,
-            error: NequiError.from({
+          return [
+            NequiError.from({
               name: "application_error",
               message: req.statusText,
               status: req.status,
             }),
-          };
+            null,
+          ] as const;
         }
       }
 
       const data = (await req.json()) as T;
-      return { data, error: null };
+      return [null, data] as const;
     } catch (error) {
-      return {
-        data: null,
-        error: handleValidationError(error),
-      };
+      return [handleValidationError(error), null] as const;
     }
   }
 
@@ -121,8 +115,7 @@ export class Nequi {
       ...options,
     };
 
-    const res = await this.request<T>(url, requestOptions);
-    return res;
+    return this.request<T>(url, requestOptions);
   }
 
   async post<T>(url: string, options: RequestInit) {
@@ -131,7 +124,6 @@ export class Nequi {
       ...options,
     };
 
-    const res = await this.request<T>(url, requestOptions);
-    return res;
+    return this.request<T>(url, requestOptions);
   }
 }

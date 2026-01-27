@@ -15,13 +15,24 @@ export const NequiOptionsSchema = z.object({
 });
 
 // ============================================================================
-// FetchResponse Type (preserves existing error pattern)
+// SDK Response Type - Tuple Pattern [error, data]
 // ============================================================================
 
-export type FetchResponse<T> = {
-  data: T | null;
-  error: NequiError | null;
-};
+/**
+ * SDK response as a tuple: [error, data]
+ * - If error exists, data will be null
+ * - If data exists, error will be null
+ *
+ * This pattern enforces error handling:
+ * @example
+ * const [error, data] = await nequi.qr.createQR({...});
+ * if (error) {
+ *   console.error(error);
+ *   return;
+ * }
+ * console.log(data);
+ */
+export type SdkResponse<T> = readonly [NequiError, null] | readonly [null, T];
 
 // ============================================================================
 // Inferred Types (using verbatim module syntax)

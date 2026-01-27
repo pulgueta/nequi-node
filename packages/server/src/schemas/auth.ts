@@ -23,10 +23,3 @@ export const AuthSchema = z.object({
   expiresAt: z.date(),
   isValid: z.boolean(),
 });
-
-// ============================================================================
-// Inferred Types (using verbatim module syntax)
-// ============================================================================
-
-export type AuthResponse = output<typeof AuthResponseSchema>;
-export type Auth = output<typeof AuthSchema>;

@@ -21,13 +21,17 @@ export class GenerateQR {
 
   /**
    * Generate a QR code for payment
-   * @see PUSH-PAYMENTS.md for documentation
+   * @see QR-CODE-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async createQR(generateCodeQRRQ: unknown) {
-    const validated = safeParse(GenerateCodeQRRQSchema, generateCodeQRRQ);
+    const [error, validated] = safeParse(
+      GenerateCodeQRRQSchema,
+      generateCodeQRRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -39,7 +43,7 @@ export class GenerateQR {
         ServiceRegion: "C001",
         ServiceVersion: "1.2.0",
       },
-      { generateCodeQRRQ: validated.data },
+      { generateCodeQRRQ: validated },
     );
 
     return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.GENERATE}`, {
@@ -51,12 +55,15 @@ export class GenerateQR {
    * Get the status of a QR payment
    * @param qrValue - The QR code string value returned from generateCodeQR
    * @see QR-CODE-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async getStatus(qrValue: unknown) {
-    const validated = safeParse(GetQRStatusPaymentRQSchema, { qrValue });
+    const [error, validated] = safeParse(GetQRStatusPaymentRQSchema, {
+      qrValue,
+    });
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -68,7 +75,7 @@ export class GenerateQR {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { getStatusPaymentRQ: validated.data },
+      { getStatusPaymentRQ: validated },
     );
 
     return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.STATUS}`, {
@@ -79,12 +86,16 @@ export class GenerateQR {
   /**
    * Reverse a QR payment transaction
    * @see QR-CODE-PAYMENTS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async revert(reversionRQ: unknown) {
-    const validated = safeParse(ReverseQRTransactionRQSchema, reversionRQ);
+    const [error, validated] = safeParse(
+      ReverseQRTransactionRQSchema,
+      reversionRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -96,7 +107,7 @@ export class GenerateQR {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { reversionRQ: validated.data },
+      { reversionRQ: validated },
     );
 
     return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.REVERT}`, {

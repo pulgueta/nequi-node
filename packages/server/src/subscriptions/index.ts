@@ -23,12 +23,16 @@ export class Subscription {
   /**
    * Process an automatic subscription payment
    * @see SUBSCRIPTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async automaticPayment(automaticPaymentRQ: unknown) {
-    const validated = safeParse(AutomaticPaymentRQSchema, automaticPaymentRQ);
+    const [error, validated] = safeParse(
+      AutomaticPaymentRQSchema,
+      automaticPaymentRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -40,7 +44,7 @@ export class Subscription {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { automaticPaymentRQ: validated.data },
+      { automaticPaymentRQ: validated },
     );
 
     return this.nequi.post(
@@ -54,12 +58,16 @@ export class Subscription {
   /**
    * Create a new subscription
    * @see SUBSCRIPTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async createSubscription(newSubscriptionRQ: unknown) {
-    const validated = safeParse(NewSubscriptionRQSchema, newSubscriptionRQ);
+    const [error, validated] = safeParse(
+      NewSubscriptionRQSchema,
+      newSubscriptionRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -71,7 +79,7 @@ export class Subscription {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { newSubscriptionRQ: validated.data },
+      { newSubscriptionRQ: validated },
     );
 
     return this.nequi.post(
@@ -85,12 +93,16 @@ export class Subscription {
   /**
    * Get subscription details
    * @see SUBSCRIPTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async getSubscription(getSubscriptionRQ: unknown) {
-    const validated = safeParse(GetSubscriptionRQSchema, getSubscriptionRQ);
+    const [error, validated] = safeParse(
+      GetSubscriptionRQSchema,
+      getSubscriptionRQ,
+    );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -102,7 +114,7 @@ export class Subscription {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { getSubscriptionRQ: validated.data },
+      { getSubscriptionRQ: validated },
     );
 
     return this.nequi.post(
@@ -116,15 +128,16 @@ export class Subscription {
   /**
    * Reverse a subscription payment transaction
    * @see SUBSCRIPTIONS.md for documentation
+   * @returns Tuple [error, data] - always check error first
    */
   async reverseTransaction(reversionRQ: unknown) {
-    const validated = safeParse(
+    const [error, validated] = safeParse(
       ReverseSubscriptionTransactionRQSchema,
       reversionRQ,
     );
 
-    if (!validated.success) {
-      return { data: null, error: validated.error };
+    if (error) {
+      return [error, null] as const;
     }
 
     const body = buildRequestMessage(
@@ -136,7 +149,7 @@ export class Subscription {
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
       },
-      { reversionRQ: validated.data },
+      { reversionRQ: validated },
     );
 
     return this.nequi.post(
