@@ -1,30 +1,32 @@
 import type { output } from "zod";
 import { z } from "zod";
 
-import type { NequiError } from "./error";
-
 // ============================================================================
-// Nequi SDK Options Schema
+// OAuth2 Token Response Schema (from /oauth2/token)
 // ============================================================================
 
-export const NequiOptionsSchema = z.object({
-  apiKey: z.string().min(1, "API key is required"),
-  clientId: z.string().min(1, "Client ID is required"),
-  clientSecret: z.string().min(1, "Client secret is required"),
-  env: z.enum(["development", "production"]).default("development"),
+export const AuthResponseSchema = z.object({
+  access_token: z.string(),
+  token_type: z.literal("Bearer"),
+  expires_in: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? parseInt(val, 10) : val)),
 });
 
 // ============================================================================
-// FetchResponse Type (preserves existing error pattern)
+// Processed Auth Result Schema
 // ============================================================================
 
-export type FetchResponse<T> = {
-  data: T | null;
-  error: NequiError | null;
-};
+export const AuthSchema = z.object({
+  token: z.string(),
+  tokenType: z.string(),
+  expiresAt: z.date(),
+  isValid: z.boolean(),
+});
 
 // ============================================================================
 // Inferred Types (using verbatim module syntax)
 // ============================================================================
 
-export type NequiOptions = output<typeof NequiOptionsSchema>;
+export type AuthResponse = output<typeof AuthResponseSchema>;
+export type Auth = output<typeof AuthSchema>;

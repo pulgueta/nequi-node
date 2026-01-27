@@ -1,6 +1,12 @@
 import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
-import { Nequi } from "@/nequi";
-import type { CreateQRBody, CreateQRResponse, GetStatusQRResponse, RevertQRBody, RevertQRResponse } from "./types";
+import type { Nequi } from "@/nequi";
+import {
+  GenerateCodeQRRQSchema,
+  GetQRStatusPaymentRQSchema,
+  ReverseQRTransactionRQSchema,
+} from "@/schemas/qr";
+import { buildRequestMessage } from "@/utils/builders";
+import { safeParse } from "@/utils/validation";
 
 /**
  * @name Pagos con QR code
@@ -13,89 +19,88 @@ export class GenerateQR {
     this.clientId = nequi.getClientId();
   }
 
-  async createQR(generateCodeQRRQ: CreateQRBody) {
-    const req = await this.nequi.post<CreateQRResponse>(`${URLS.BASE_PATH}${ENDPOINTS.QR.GENERATE}`, {
-      body: JSON.stringify({
-        RequestMessage: {
-          RequestHeader: {
-            Channel: CHANNELS.QR,
-            RequestDate: new Date().toISOString(),
-            MessageID: "1234567890",
-            ClientID: this.clientId,
-            Destination: {
-              ServiceName: "PaymentsService",
-              ServiceOperation: "generateCodeQR",
-              ServiceRegion: "C001",
-              ServiceVersion: "1.2.0",
-            },
-          },
-          RequestBody: {
-            any: {
-              generateCodeQRRQ,
-            },
-          },
-        },
-      }),
-    });
+  /**
+   * Generate a QR code for payment
+   * @see PUSH-PAYMENTS.md for documentation
+   */
+  async createQR(generateCodeQRRQ: unknown) {
+    const validated = safeParse(GenerateCodeQRRQSchema, generateCodeQRRQ);
 
-    return req;
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.QR,
+      this.clientId,
+      {
+        ServiceName: "PaymentsService",
+        ServiceOperation: "generateCodeQR",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.2.0",
+      },
+      { generateCodeQRRQ: validated.data },
+    );
+
+    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.GENERATE}`, {
+      body: JSON.stringify(body),
+    });
   }
 
-  async getStatus(codeQR: string) {
-    const req = await this.nequi.post<GetStatusQRResponse>(`${URLS.BASE_PATH}${ENDPOINTS.QR.STATUS}`, {
-      body: JSON.stringify({
-        RequestMessage: {
-          RequestHeader: {
-            Channel: CHANNELS.QR,
-            RequestDate: new Date().toISOString(),
-            MessageID: "1234567890",
-            ClientID: this.clientId,
-            Destination: {
-              ServiceName: "PaymentsService",
-              ServiceOperation: "getStatusPayment",
-              ServiceRegion: "C001",
-              ServiceVersion: "1.0.0",
-            },
-          },
-          RequestBody: {
-            any: {
-              getStatusPaymentRQ: {
-                codeQR,
-              },
-            },
-          },
-        },
-      }),
-    });
+  /**
+   * Get the status of a QR payment
+   * @param qrValue - The QR code string value returned from generateCodeQR
+   * @see QR-CODE-PAYMENTS.md for documentation
+   */
+  async getStatus(qrValue: unknown) {
+    const validated = safeParse(GetQRStatusPaymentRQSchema, { qrValue });
 
-    return req;
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.QR,
+      this.clientId,
+      {
+        ServiceName: "PaymentsService",
+        ServiceOperation: "getStatusPayment",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { getStatusPaymentRQ: validated.data },
+    );
+
+    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.STATUS}`, {
+      body: JSON.stringify(body),
+    });
   }
 
-  async revert(reversionRQ: RevertQRBody) {
-    const req = await this.nequi.post<RevertQRResponse>(`${URLS.BASE_PATH}${ENDPOINTS.QR.REVERT}`, {
-      body: JSON.stringify({
-        RequestMessage: {
-          RequestHeader: {
-            Channel: CHANNELS.QR,
-            RequestDate: new Date().toISOString(),
-            MessageID: "1234567890",
-            ClientID: this.clientId,
-            Destination: {
-              ServiceName: "reverseServices",
-              ServiceOperation: "reverseTransaction",
-              ServiceRegion: "C001",
-              ServiceVersion: "1.0.0",
-            },
-          },
-          RequestBody: {
-            any: {
-              reversionRQ,
-            },
-          },
-        },
-      }),
-    });
+  /**
+   * Reverse a QR payment transaction
+   * @see QR-CODE-PAYMENTS.md for documentation
+   */
+  async revert(reversionRQ: unknown) {
+    const validated = safeParse(ReverseQRTransactionRQSchema, reversionRQ);
 
-    return req;
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.QR,
+      this.clientId,
+      {
+        ServiceName: "reverseServices",
+        ServiceOperation: "reverseTransaction",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { reversionRQ: validated.data },
+    );
+
+    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.REVERT}`, {
+      body: JSON.stringify(body),
+    });
   }
 }

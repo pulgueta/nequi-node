@@ -1,17 +1,13 @@
-import type { Nequi } from "@/nequi";
 import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
-import type {
-  AutomaticPaymentBody,
-  AutomaticPaymentResponse,
-  CreateSubscriptionBody,
-  CreateSubscriptionResponse,
-  GetStatusPaymentBody,
-  GetStatusPaymentResponse,
-  GetSubscriptionBody,
-  GetSubscriptionResponse,
-  ReverseTransactionBody,
-  ReverseTransactionResponse,
-} from "./types";
+import type { Nequi } from "@/nequi";
+import {
+  AutomaticPaymentRQSchema,
+  GetSubscriptionRQSchema,
+  NewSubscriptionRQSchema,
+  ReverseSubscriptionTransactionRQSchema,
+} from "@/schemas/subscriptions";
+import { buildRequestMessage } from "@/utils/builders";
+import { safeParse } from "@/utils/validation";
 
 /**
  * @name Suscripciones
@@ -24,158 +20,130 @@ export class Subscription {
     this.clientId = nequi.getClientId();
   }
 
-  async automaticPayment(automaticPaymentRQ: AutomaticPaymentBody) {
-    const req = await this.nequi.post<AutomaticPaymentResponse>(
+  /**
+   * Process an automatic subscription payment
+   * @see SUBSCRIPTIONS.md for documentation
+   */
+  async automaticPayment(automaticPaymentRQ: unknown) {
+    const validated = safeParse(AutomaticPaymentRQSchema, automaticPaymentRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.SUBSCRIPTION,
+      this.clientId,
+      {
+        ServiceName: "SubscriptionPaymentService",
+        ServiceOperation: "automaticPayment",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { automaticPaymentRQ: validated.data },
+    );
+
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.AUTOMATIC_PAYMENT}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.SUBSCRIPTION,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "SubscriptionPaymentService",
-                ServiceOperation: "automaticPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                automaticPaymentRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async getStatusPayment(getStatusPaymentRS: GetStatusPaymentBody) {
-    const req = await this.nequi.post<GetStatusPaymentResponse>(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.STATUS_PAYMENT}`,
+  /**
+   * Create a new subscription
+   * @see SUBSCRIPTIONS.md for documentation
+   */
+  async createSubscription(newSubscriptionRQ: unknown) {
+    const validated = safeParse(NewSubscriptionRQSchema, newSubscriptionRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.SUBSCRIPTION,
+      this.clientId,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.SUBSCRIPTION,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "getStatusPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                getStatusPaymentRS,
-              },
-            },
-          },
-        }),
-      }
+        ServiceName: "SubscriptionPaymentService",
+        ServiceOperation: "newSubscription",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { newSubscriptionRQ: validated.data },
     );
 
-    return req;
-  }
-
-  async createSubscription(newSubscriptionRQ: CreateSubscriptionBody) {
-    const req = await this.nequi.post<CreateSubscriptionResponse>(
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.CREATE_SUBSCRIPTION}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.SUBSCRIPTION,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "getStatusPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                newSubscriptionRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async getSubscription(getSubscriptionRQ: GetSubscriptionBody) {
-    const req = await this.nequi.post<GetSubscriptionResponse>(
+  /**
+   * Get subscription details
+   * @see SUBSCRIPTIONS.md for documentation
+   */
+  async getSubscription(getSubscriptionRQ: unknown) {
+    const validated = safeParse(GetSubscriptionRQSchema, getSubscriptionRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.SUBSCRIPTION,
+      this.clientId,
+      {
+        ServiceName: "SubscriptionPaymentService",
+        ServiceOperation: "getSubscription",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { getSubscriptionRQ: validated.data },
+    );
+
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.GET_SUBSCRIPTION}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.SUBSCRIPTION,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "getStatusPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                getSubscriptionRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async reverseTransaction(reversionRQ: ReverseTransactionBody) {
-    const req = await this.nequi.post<ReverseTransactionResponse>(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.REVERSE_TRANSACTION}`,
-      {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.SUBSCRIPTION,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "getStatusPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                reversionRQ,
-              },
-            },
-          },
-        }),
-      }
+  /**
+   * Reverse a subscription payment transaction
+   * @see SUBSCRIPTIONS.md for documentation
+   */
+  async reverseTransaction(reversionRQ: unknown) {
+    const validated = safeParse(
+      ReverseSubscriptionTransactionRQSchema,
+      reversionRQ,
     );
 
-    return req;
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.SUBSCRIPTION,
+      this.clientId,
+      {
+        ServiceName: "ReverseServices",
+        ServiceOperation: "reverseTransaction",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { reversionRQ: validated.data },
+    );
+
+    return this.nequi.post(
+      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.REVERSE_TRANSACTION}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 }

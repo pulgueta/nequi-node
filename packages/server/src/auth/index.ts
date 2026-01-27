@@ -1,8 +1,9 @@
 import { URLS } from "@/constants";
 import { NequiError } from "@/error";
-import type { Auth, AuthResponse } from "./types";
+import { AuthResponseSchema } from "@/schemas/auth";
+import { handleValidationError } from "@/utils/validation";
 
-export const nequiAuth = async (clientId: string, clientSecret: string): Promise<Auth | NequiError> => {
+export const nequiAuth = async (clientId: string, clientSecret: string) => {
   try {
     const authToken = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
 
@@ -15,29 +16,37 @@ export const nequiAuth = async (clientId: string, clientSecret: string): Promise
       },
     });
 
-    if (!req.ok || NequiError.isNequiError(req)) {
-      throw NequiError.from({
-        message: "[Nequi SDK]: Fallo de autenticación",
-        name: "invalid_access",
-        status: 422,
+    if (!req.ok) {
+      return NequiError.from({
+        message: "[Nequi SDK]: Authentication failed - Invalid credentials",
+        name: "authentication_error",
+        status: req.status,
       });
     }
 
-    const res = (await req.json()) as AuthResponse;
+    const json = await req.json();
+    const parsed = AuthResponseSchema.safeParse(json);
+
+    if (!parsed.success) {
+      return handleValidationError(parsed.error);
+    }
+
+    const res = parsed.data;
+    const expiresAt = new Date(Date.now() + res.expires_in * 1000);
 
     return {
       token: res.access_token,
       tokenType: res.token_type,
-      expiresAt: new Date(Date.now() + res.expires_in * 1000),
-      isValid: new Date() < new Date(Date.now() + res.expires_in * 1000),
+      expiresAt,
+      isValid: new Date() < expiresAt,
     };
   } catch (error) {
     if (NequiError.isNequiError(error)) {
-      throw error;
+      return error;
     }
 
-    throw NequiError.from({
-      message: "[Nequi SDK]: Fallo de autenticación",
+    return NequiError.from({
+      message: "[Nequi SDK]: Authentication failed",
       name: "authentication_error",
       status: 401,
     });

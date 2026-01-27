@@ -1,6 +1,8 @@
-import type { Nequi } from "@/nequi";
 import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
-import type { GetReportsBody, GetReportsResponse } from "./types";
+import type { Nequi } from "@/nequi";
+import { GetReportsRQSchema } from "@/schemas/reports";
+import { buildRequestMessage } from "@/utils/builders";
+import { safeParse } from "@/utils/validation";
 
 /**
  * @name Servicios de reportes
@@ -13,34 +15,34 @@ export class Reports {
     this.clientId = nequi.getClientId();
   }
 
-  async getReports(getReportsRQ: GetReportsBody) {
-    const req = await this.nequi.post<GetReportsResponse>(
-      `${URLS.BASE_PATH}${ENDPOINTS.REPORTS.GET_REPORTS}`,
+  /**
+   * Get transaction reports for a commerce
+   * @see REPORTS.md for documentation
+   */
+  async getReports(getReportsRQ: unknown) {
+    const validated = safeParse(GetReportsRQSchema, getReportsRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.REPORTS,
+      this.clientId,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.REPORTS,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "ReportsService",
-                ServiceOperation: "getReports",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                getReportsRQ,
-              },
-            },
-          },
-        }),
-      }
+        ServiceName: "ReportsService",
+        ServiceOperation: "getReports",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { getReportsRQ: validated.data },
     );
 
-    return req;
+    return this.nequi.post(
+      `${URLS.BASE_PATH}${ENDPOINTS.REPORTS.GET_REPORTS}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 }

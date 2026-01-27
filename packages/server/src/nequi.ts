@@ -1,12 +1,15 @@
+import type { z } from "zod";
+
 import { nequiAuth } from "@/auth";
-import type { Auth } from "@/auth/types";
-import { NequiError } from "@/error";
-import { GenerateQR } from "@/qr";
-import { PushPayment } from "@/payments";
-import { Subscription } from "@/subscriptions";
 import { Dispersions } from "@/dispersions";
+import { NequiError } from "@/error";
+import { PushPayment } from "@/payments";
+import { GenerateQR } from "@/qr";
 import { Reports } from "@/reports";
-import type { FetchResponse, NequiOptions } from "@/types";
+import { Subscription } from "@/subscriptions";
+import type { FetchResponse } from "@/types";
+import { NequiOptionsSchema } from "@/types";
+import { handleValidationError } from "@/utils/validation";
 
 export class Nequi {
   private readonly apiKey: string;
@@ -19,18 +22,20 @@ export class Nequi {
   readonly dispersions: Dispersions;
   readonly reports: Reports;
 
-  constructor(opts: NequiOptions) {
-    if (!opts.apiKey || !opts.clientId || !opts.clientSecret) {
+  constructor(opts: z.input<typeof NequiOptionsSchema>) {
+    const parsed = NequiOptionsSchema.safeParse(opts);
+
+    if (!parsed.success) {
       throw NequiError.from({
-        message: "[Nequi SDK]: Proporcione las credenciales",
+        message: `[Nequi SDK]: Invalid configuration - ${parsed.error.issues.map((e) => e.message).join(", ")}`,
         name: "missing_required_field",
         status: 422,
       });
     }
 
-    this.apiKey = opts.apiKey;
-    this.clientId = opts.clientId;
-    this.clientSecret = opts.clientSecret;
+    this.apiKey = parsed.data.apiKey;
+    this.clientId = parsed.data.clientId;
+    this.clientSecret = parsed.data.clientSecret;
 
     this.qr = new GenerateQR(this);
     this.pushPayment = new PushPayment(this);
@@ -39,11 +44,11 @@ export class Nequi {
     this.reports = new Reports(this);
   }
 
-  public getClientId(): string {
+  getClientId() {
     return this.clientId;
   }
 
-  private async auth(): Promise<Auth | NequiError> {
+  private async auth() {
     const authenticate = await nequiAuth(this.clientId, this.clientSecret);
 
     if (NequiError.isNequiError(authenticate)) {
@@ -53,88 +58,80 @@ export class Nequi {
     return authenticate;
   }
 
-  async request<const T>(
+  async request<T>(
     url: string,
-    options: RequestInit
+    options: RequestInit,
   ): Promise<FetchResponse<T>> {
     const auth = await this.auth();
 
-    if (auth instanceof NequiError) {
-      throw NequiError.from(auth);
+    if (NequiError.isNequiError(auth)) {
+      return { data: null, error: auth };
     }
 
-    const req = await fetch(url, {
-      ...options,
-      headers: {
-        Authorization: `${auth.tokenType} ${auth.token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": this.apiKey,
-      },
-    });
+    try {
+      const req = await fetch(url, {
+        ...options,
+        headers: {
+          Authorization: `${auth.tokenType} ${auth.token}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "x-api-key": this.apiKey,
+        },
+      });
 
-    if (!req.ok) {
-      try {
-        const err = await req.text();
+      if (!req.ok) {
+        try {
+          const errText = await req.text();
+          const errJson = JSON.parse(errText);
 
-        return { data: null, error: JSON.parse(err) };
-      } catch (error) {
-        if (NequiError.isNequiError(error)) {
           return {
             data: null,
-            error: {
+            error: NequiError.from({
+              name:
+                req.status === 403 ? "invalid_api_Key" : "application_error",
+              message: errJson?.message || req.statusText,
+              status: req.status,
+            }),
+          };
+        } catch {
+          return {
+            data: null,
+            error: NequiError.from({
               name: "application_error",
-              message: "Internal server error",
-              status: 500,
-            },
+              message: req.statusText,
+              status: req.status,
+            }),
           };
         }
-
-        const err: NequiError = {
-          name: "application_error",
-          message: req.statusText,
-          status: 500,
-        };
-
-        if (NequiError.isNequiError(error)) {
-          return {
-            data: null,
-            error: { ...err, message: error.message, status: error.status },
-          };
-        }
-
-        return { data: null, error: err };
       }
-    }
 
-    return {
-      data: (await req.json()) as T,
-      error: null,
-    };
+      const data = (await req.json()) as T;
+      return { data, error: null };
+    } catch (error) {
+      return {
+        data: null,
+        error: handleValidationError(error),
+      };
+    }
   }
 
-  async get<T>(
-    url: string,
-    options: { query: Record<string, unknown> }
-  ): Promise<T | null> {
-    const requestOptions = {
+  async get<T>(url: string, options?: { query?: Record<string, unknown> }) {
+    const requestOptions: RequestInit = {
       method: "GET",
       ...options,
     };
 
     const res = await this.request<T>(url, requestOptions);
-
-    return res.data;
+    return res;
   }
 
-  async post<T>(url: string, options: RequestInit): Promise<T | null> {
-    const requestOptions = {
+  async post<T>(url: string, options: RequestInit) {
+    const requestOptions: RequestInit = {
       method: "POST",
       ...options,
     };
 
     const res = await this.request<T>(url, requestOptions);
-
-    return res.data;
+    return res;
   }
 }

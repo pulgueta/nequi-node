@@ -29,12 +29,25 @@
     "url": "https://github.com/pulgueta/nequi-node-sdk/issues"
   },
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist"
   ],
   "scripts": {
-    "ci": "bun lint && bun format && bun run build",
-    "build:server": "cd packages/server && bun run build"
+    "build": "bun build ./src/index.ts --outdir ./dist --target node && bun run build:types",
+    "build:types": "tsc --emitDeclarationOnly --declaration --outDir ./dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

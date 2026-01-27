@@ -1,15 +1,13 @@
-import type { Nequi } from "@/nequi";
 import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
-import type {
-  CancelUnregisteredPaymentBody,
-  CancelUnregisteredPaymentResponse,
-  CreatePaymentPushBody,
-  CreatePaymentPushResponse,
-  GetStatusPaymentBody,
-  GetStatusPaymentResponse,
-  RevertTransactionBody,
-  RevertTransactionResponse,
-} from "./types";
+import type { Nequi } from "@/nequi";
+import {
+  CancelUnregisteredPaymentRQSchema,
+  GetStatusPaymentRQSchema,
+  RevertTransactionRQSchema,
+  UnregisteredPaymentRQSchema,
+} from "@/schemas/payments";
+import { buildRequestMessage } from "@/utils/builders";
+import { safeParse } from "@/utils/validation";
 
 /**
  * @name Pagos con notificación push
@@ -24,127 +22,133 @@ export class PushPayment {
     this.clientId = nequi.getClientId();
   }
 
-  async createPayment(unregisteredPaymentRQ: CreatePaymentPushBody) {
-    const req = await this.nequi.post<CreatePaymentPushResponse>(
+  /**
+   * Create a new push payment request (unregistered payment)
+   * @see PUSH-PAYMENTS.md for documentation
+   */
+  async createPayment(unregisteredPaymentRQ: unknown) {
+    const validated = safeParse(
+      UnregisteredPaymentRQSchema,
+      unregisteredPaymentRQ,
+    );
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.PAYMENT_PUSH,
+      this.clientId,
+      {
+        ServiceName: "PaymentsService",
+        ServiceOperation: "unregisteredPayment",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.2.0",
+      },
+      { unregisteredPaymentRQ: validated.data },
+    );
+
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.UNREGISTERED}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.PAYMENT_PUSH,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "unregisteredPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.2.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                unregisteredPaymentRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async cancel(cancelUnregisteredPaymentRQ: CancelUnregisteredPaymentBody) {
-    const req = await this.nequi.post<CancelUnregisteredPaymentResponse>(
+  /**
+   * Cancel an unregistered payment request
+   * @see PUSH-PAYMENTS.md for documentation
+   */
+  async cancel(cancelUnregisteredPaymentRQ: unknown) {
+    const validated = safeParse(
+      CancelUnregisteredPaymentRQSchema,
+      cancelUnregisteredPaymentRQ,
+    );
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.PAYMENT_PUSH,
+      this.clientId,
+      {
+        ServiceName: "PaymentsService",
+        ServiceOperation: "cancelUnregisteredPayment",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { cancelUnregisteredPaymentRQ: validated.data },
+    );
+
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.CANCEL_UNREGISTERED}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.PAYMENT_PUSH,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "cancelUnregisteredPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                cancelUnregisteredPaymentRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async getStatus(getStatusPaymentRQ: GetStatusPaymentBody) {
-    const req = await this.nequi.post<GetStatusPaymentResponse>(
+  /**
+   * Get the status of a push payment
+   * @see PUSH-PAYMENTS.md for documentation
+   */
+  async getStatus(getStatusPaymentRQ: unknown) {
+    const validated = safeParse(GetStatusPaymentRQSchema, getStatusPaymentRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.PAYMENT_PUSH,
+      this.clientId,
+      {
+        ServiceName: "PaymentsService",
+        ServiceOperation: "getStatusPayment",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { getStatusPaymentRQ: validated.data },
+    );
+
+    return this.nequi.post(
       `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.STATUS}`,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: CHANNELS.PAYMENT_PUSH,
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "PaymentsService",
-                ServiceOperation: "getStatusPayment",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                getStatusPaymentRQ,
-              },
-            },
-          },
-        }),
-      }
+        body: JSON.stringify(body),
+      },
     );
-
-    return req;
   }
 
-  async revertTransaction(reversionRQ: RevertTransactionBody) {
-    const req = await this.nequi.post<RevertTransactionResponse>(
-      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.REVERT}`,
+  /**
+   * Revert a push payment transaction
+   * @see PUSH-PAYMENTS.md for documentation
+   */
+  async revertTransaction(reversionRQ: unknown) {
+    const validated = safeParse(RevertTransactionRQSchema, reversionRQ);
+
+    if (!validated.success) {
+      return { data: null, error: validated.error };
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.PAYMENT_PUSH,
+      this.clientId,
       {
-        body: JSON.stringify({
-          RequestMessage: {
-            RequestHeader: {
-              Channel: "PNP04-C001",
-              RequestDate: new Date().toISOString(),
-              MessageID: "1234567890",
-              ClientID: this.clientId,
-              Destination: {
-                ServiceName: "ReverseServices",
-                ServiceOperation: "reverseTransaction",
-                ServiceRegion: "C001",
-                ServiceVersion: "1.0.0",
-              },
-            },
-            RequestBody: {
-              any: {
-                reversionRQ,
-              },
-            },
-          },
-        }),
-      }
+        ServiceName: "ReverseServices",
+        ServiceOperation: "reverseTransaction",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { reversionRQ: validated.data },
     );
 
-    return req;
+    return this.nequi.post(
+      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.REVERT}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 }
