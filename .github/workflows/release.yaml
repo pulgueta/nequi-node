@@ -20,43 +20,28 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: Release
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
-
-      - name: Disable Husky in CI
-        run: echo "HUSKY=0" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: pnpm install
+      - name: Setup
+        uses: ./.github/setup
 
       - name: Build package
-        run: pnpm run ci
+        working-directory: packages/server
+        run: bun run build
 
       - name: Publish package
         uses: cycjimmy/semantic-release-action@v4
         with:
+          working_directory: packages/server
           semantic_version: latest
           extra_plugins: |
             @semantic-release/changelog
-            @semantic-release/exec
+            @semantic-release/npm
             @semantic-release/git
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
