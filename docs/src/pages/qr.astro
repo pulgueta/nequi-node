@@ -1,0 +1,173 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="QR Code Payments - Nequi SDK Test">
+  <h1>QR Code Payments</h1>
+
+  <!-- Generate QR Code -->
+  <div class="card">
+    <h2>Generate QR Code</h2>
+    <form id="form-create-qr">
+      <div class="form-group">
+        <label for="code">Code (NIT)</label>
+        <input type="text" id="code" name="code" placeholder="NIT_1" required />
+        <p class="hint">Merchant identifier (e.g., NIT_1)</p>
+      </div>
+      <div class="form-group">
+        <label for="value">Value</label>
+        <input
+          type="text"
+          id="value"
+          name="value"
+          placeholder="1000"
+          required
+        />
+        <p class="hint">Amount to charge (string)</p>
+      </div>
+      <div class="form-group">
+        <label for="reference1">Reference 1 (optional)</label>
+        <input type="text" id="reference1" name="reference1" placeholder="" />
+      </div>
+      <div class="form-group">
+        <label for="reference2">Reference 2 (optional)</label>
+        <input type="text" id="reference2" name="reference2" placeholder="" />
+      </div>
+      <div class="form-group">
+        <label for="reference3">Reference 3 (optional)</label>
+        <input type="text" id="reference3" name="reference3" placeholder="" />
+      </div>
+      <button type="submit">Generate QR</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Get QR Status -->
+  <div class="card">
+    <h2>Get QR Payment Status</h2>
+    <form id="form-qr-status">
+      <div class="form-group">
+        <label for="qrValue">QR Value</label>
+        <input
+          type="text"
+          id="qrValue"
+          name="qrValue"
+          placeholder="QR code string from generate response"
+          required
+        />
+        <p class="hint">The qrValue returned from generateCodeQR</p>
+      </div>
+      <button type="submit">Check Status</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Reverse QR Transaction -->
+  <div class="card">
+    <h2>Reverse QR Transaction</h2>
+    <form id="form-qr-revert">
+      <div class="form-group">
+        <label for="revert-qrValue">QR Value</label>
+        <input
+          type="text"
+          id="revert-qrValue"
+          name="qrValue"
+          placeholder="QR code string"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="revert-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-value">Value</label>
+        <input
+          type="text"
+          id="revert-value"
+          name="value"
+          placeholder="1000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-code">Code</label>
+        <input
+          type="text"
+          id="revert-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <button type="submit">Reverse Transaction</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const endpoints = {
+    "form-create-qr": "/api/qr/create",
+    "form-qr-status": "/api/qr/status",
+    "form-qr-revert": "/api/qr/revert",
+  };
+
+  Object.entries(endpoints).forEach(([formId, endpoint]) => {
+    const form = document.getElementById(formId);
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        if (value) data[key] = value;
+      });
+
+      const messageContainer = form.querySelector(".message-container");
+      const resultContainer = form.querySelector(".result-container");
+
+      if (messageContainer) messageContainer.innerHTML = "";
+      if (resultContainer) resultContainer.innerHTML = "";
+
+      try {
+        const result = await window.nequiApi(endpoint, data);
+
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message ' +
+            (result.success ? "success" : "error") +
+            '">' +
+            (result.success ? "Success" : "Error") +
+            ": " +
+            result.message +
+            "</div>";
+        }
+
+        if (resultContainer && result.data) {
+          resultContainer.innerHTML =
+            '<div class="result">' +
+            JSON.stringify(result.data, null, 2) +
+            "</div>";
+        }
+      } catch (error) {
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message error">Network Error: ' +
+            (error.message || "Unknown error") +
+            "</div>";
+        }
+      }
+    });
+  });
+</script>

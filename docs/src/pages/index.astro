@@ -1,0 +1,143 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Nequi SDK Test Application">
+  <h1>Nequi SDK Test Application</h1>
+
+  <div class="card" id="config-status">
+    <h2>Configuration Status</h2>
+    <p>Loading...</p>
+  </div>
+
+  <h2>Test Endpoints</h2>
+  <div class="grid">
+    <a href="/qr" class="card" style="text-decoration: none; color: inherit;">
+      <h2>QR Code Payments</h2>
+      <p class="hint">Generate QR codes, check status, reverse transactions</p>
+    </a>
+
+    <a
+      href="/payments"
+      class="card"
+      style="text-decoration: none; color: inherit;"
+    >
+      <h2>Push Payments</h2>
+      <p class="hint">Create, cancel, and revert push payment notifications</p>
+    </a>
+
+    <a
+      href="/subscriptions"
+      class="card"
+      style="text-decoration: none; color: inherit;"
+    >
+      <h2>Subscriptions</h2>
+      <p class="hint">Manage subscriptions and automatic payments</p>
+    </a>
+
+    <a
+      href="/dispersions"
+      class="card"
+      style="text-decoration: none; color: inherit;"
+    >
+      <h2>Dispersions</h2>
+      <p class="hint">Send funds to Nequi accounts</p>
+    </a>
+
+    <a
+      href="/reports"
+      class="card"
+      style="text-decoration: none; color: inherit;"
+    >
+      <h2>Reports</h2>
+      <p class="hint">Generate transaction reports</p>
+    </a>
+  </div>
+
+  <div class="card" style="margin-top: 2rem;">
+    <h2>SDK Usage Pattern</h2>
+    <p style="margin-bottom: 1rem;">
+      The SDK uses a tuple pattern <code>[error, data]</code> for all responses:
+    </p>
+    <pre><code>{`const [error, data] = await nequi.qr.createQR({
+  code: "NIT_1",
+  value: "1000",
+});
+
+if (error) {
+  console.error(error.message);
+  return;
+}
+
+console.log(data);`}</code></pre>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const statusContainer = document.getElementById("config-status");
+    if (!statusContainer) return;
+
+    const response = await fetch("/api/health");
+    const health = await response.json();
+
+    if (health.isProduction) {
+      // Production mode
+      // @ts-expect-error - window.NequiCredentials is not typed
+      const hasCredentials = window.NequiCredentials?.isSet();
+
+      if (hasCredentials) {
+        statusContainer.innerHTML = `
+          <h2>Configuration Status</h2>
+          <span class="status-badge configured" style="background: #e8f5e9; color: #2e7d32;">Ready</span>
+          <p style="margin-top: 1rem;">
+            <strong>Mode:</strong> Sandbox (Development)
+          </p>
+          <p>
+            <strong>Credentials:</strong> Stored in browser session
+          </p>
+          <button onclick="window.NequiCredentials.clear(); location.reload();" style="margin-top: 1rem; background: #f44336;">
+            Clear Credentials
+          </button>
+        `;
+      } else {
+        statusContainer.innerHTML = `
+          <h2>Configuration Status</h2>
+          <span class="status-badge not-configured">Credentials Required</span>
+          <p style="margin-top: 1rem;">
+            Click the "Set Credentials" button in the navbar to enter your Nequi credentials.
+          </p>
+          <p class="hint">
+            Your credentials are stored securely in your browser's session storage 
+            and are never saved on the server.
+          </p>
+        `;
+      }
+    } else {
+      // Development mode
+      if (health.isConfigured) {
+        statusContainer.innerHTML = `
+          <h2>Configuration Status</h2>
+          <span class="status-badge configured" style="background: #e8f5e9; color: #2e7d32;">Configured</span>
+          <p style="margin-top: 1rem;">
+            <strong>Mode:</strong> Development (using .env.local)
+          </p>
+          <p>
+            <strong>Environment:</strong> Sandbox
+          </p>
+        `;
+      } else {
+        statusContainer.innerHTML = `
+          <h2>Configuration Status</h2>
+          <span class="status-badge not-configured">Not Configured</span>
+          <p style="margin-top: 1rem;">
+            Create a <code>.env.local</code> file with your Nequi credentials:
+          </p>
+          <pre><code>NEQUI_CLIENT_ID=your_client_id
+NEQUI_CLIENT_SECRET=your_client_secret
+NEQUI_API_KEY=your_api_key</code></pre>
+        `;
+      }
+    }
+  });
+</script>
