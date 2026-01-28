@@ -1,4 +1,4 @@
-import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
+import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
   DisperseFundsRQSchema,
@@ -37,7 +37,7 @@ export class Dispersions {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.DISPERSIONS.CREATE_DISPERSION}`,
+      `${this.nequi.basePath}${ENDPOINTS.DISPERSIONS.CREATE_DISPERSION}`,
       {
         body: JSON.stringify(body),
       },
@@ -67,7 +67,7 @@ export class Dispersions {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.DISPERSIONS.CANCEL_DISPERSION}`,
+      `${this.nequi.basePath}${ENDPOINTS.DISPERSIONS.CANCEL_DISPERSION}`,
       {
         body: JSON.stringify(body),
       },

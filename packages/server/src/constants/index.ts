@@ -1,13 +1,13 @@
-export const URLS = {
+export const getUrls = (env: "development" | "production") => ({
   BASE_PATH:
-    process.env.NODE_ENV === "development"
+    env === "development"
       ? "https://api.sandbox.nequi.com"
       : "https://api.nequi.com",
   AUTH_URI:
-    process.env.NODE_ENV === "development"
+    env === "development"
       ? "https://oauth.sandbox.nequi.com/oauth2/token"
       : "https://oauth.nequi.com/oauth2/token",
-} as const;
+});
 
 export const ENDPOINTS = {
   QR: {
