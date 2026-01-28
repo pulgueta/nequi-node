@@ -33,15 +33,21 @@ jobs:
         working-directory: packages/server
         run: bun run build
 
-      - name: Publish package
+      - name: Semantic release
         uses: cycjimmy/semantic-release-action@v4
         with:
           working_directory: packages/server
           semantic_version: latest
           extra_plugins: |
             @semantic-release/changelog
-            @semantic-release/npm
             @semantic-release/git
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish package to NPM
+        working-directory: packages/server
+        env:
+          BUN_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          bun publish
