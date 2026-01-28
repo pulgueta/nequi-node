@@ -15,18 +15,18 @@
     "nequi",
     "sdk",
     "nequi-sdk",
-    "nequi-node-sdk",
+    "nequi-node",
     "bancolombia",
     "pagos",
     "pagos-bancolombia"
   ],
-  "homepage": "https://github.com/pulgueta/nequi-node-sdk",
+  "homepage": "https://github.com/pulgueta/nequi-node",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pulgueta/nequi-node-sdk.git"
+    "url": "https://github.com/pulgueta/nequi-node.git"
   },
   "bugs": {
-    "url": "https://github.com/pulgueta/nequi-node-sdk/issues"
+    "url": "https://github.com/pulgueta/nequi-node/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
