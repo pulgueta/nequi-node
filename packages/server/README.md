@@ -14,9 +14,9 @@ npm install @pulgueta/nequi-node
 import { Nequi } from "@pulgueta/nequi-node";
 
 const nequi = new Nequi({
-  apiKey: "your-api-key", // Required: API key from Nequi Conecta
-  clientId: "your-client-id", // Required: Client ID from Nequi Conecta
-  clientSecret: "your-client-secret", // Required: Client secret from Nequi Conecta
+  apiKey: "your-api-key", // Required: API key from Nequi
+  clientId: "your-client-id", // Required: Client ID from Nequi
+  clientSecret: "your-client-secret", // Required: Client secret from Nequi
   env: "development", // Optional: "development" | "production" (default: "development")
 });
 ```
@@ -247,15 +247,6 @@ if (isSuccessResponse("0")) {
   // Success
 }
 ```
-
-## Additional Documentation
-
-- [Push Payments](./PUSH-PAYMENTS.md)
-- [QR Code Payments](./QR-CODE-PAYMENTS.md)
-- [Subscriptions](./SUBSCRIPTIONS.md)
-- [Dispersions](./DISPERTIONS.md)
-- [Reports](./REPORTS.md)
-- [Security Token](./SECURITY-TOKEN.md)
 
 ## Support
 
