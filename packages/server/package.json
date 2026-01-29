@@ -1,7 +1,7 @@
 {
   "name": "@pulgueta/nequi-node",
   "description": "SDK de la comunidad de Nequi para Node.js",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "license": "MIT",
   "author": {
     "name": "Andrés Rodríguez",
