@@ -3,12 +3,10 @@
   "description": "Nequi SDK Node.js monorepo",
   "version": "0.0.0",
   "license": "MIT",
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "apps/*"
-    ]
-  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
