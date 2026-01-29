@@ -1,4 +1,4 @@
-import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
+import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
   AutomaticPaymentRQSchema,
@@ -39,7 +39,7 @@ export class Subscription {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.AUTOMATIC_PAYMENT}`,
+      `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.AUTOMATIC_PAYMENT}`,
       {
         body: JSON.stringify(body),
       },
@@ -69,7 +69,7 @@ export class Subscription {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.CREATE_SUBSCRIPTION}`,
+      `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.CREATE_SUBSCRIPTION}`,
       {
         body: JSON.stringify(body),
       },
@@ -99,7 +99,7 @@ export class Subscription {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.GET_SUBSCRIPTION}`,
+      `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.GET_SUBSCRIPTION}`,
       {
         body: JSON.stringify(body),
       },
@@ -129,7 +129,7 @@ export class Subscription {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.SUBSCRIPTION.REVERSE_TRANSACTION}`,
+      `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.REVERSE_TRANSACTION}`,
       {
         body: JSON.stringify(body),
       },

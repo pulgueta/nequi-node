@@ -12,14 +12,14 @@ export default {
     [
       "@semantic-release/changelog",
       {
-        "changelogFile": "CHANGELOG.md"
+        "changelogFile": "./packages/server/CHANGELOG.md"
       }
     ],
     [
       "@semantic-release/git",
       {
         "assets": [
-          "CHANGELOG.md"
+          "./packages/server/CHANGELOG.md"
         ]
       }
     ],

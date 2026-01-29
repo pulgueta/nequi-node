@@ -1,6 +1,7 @@
 import type { z } from "zod";
 
 import { nequiAuth } from "@/auth";
+import { getUrls } from "@/constants";
 import { Dispersions } from "@/dispersions";
 import { NequiError } from "@/error";
 import { PushPayment } from "@/payments";
@@ -15,6 +16,9 @@ export class Nequi {
   private readonly apiKey: string;
   private readonly clientId: string;
   private readonly clientSecret: string;
+  private readonly env: "development" | "production";
+  readonly basePath: string;
+  readonly authUri: string;
 
   readonly qr: GenerateQR;
   readonly pushPayment: PushPayment;
@@ -36,6 +40,11 @@ export class Nequi {
     this.apiKey = parsed.data.apiKey;
     this.clientId = parsed.data.clientId;
     this.clientSecret = parsed.data.clientSecret;
+    this.env = parsed.data.env;
+
+    const urls = getUrls(this.env);
+    this.basePath = urls.BASE_PATH;
+    this.authUri = urls.AUTH_URI;
 
     this.qr = new GenerateQR(this);
     this.pushPayment = new PushPayment(this);
@@ -49,7 +58,11 @@ export class Nequi {
   }
 
   private async auth() {
-    const authenticate = await nequiAuth(this.clientId, this.clientSecret);
+    const authenticate = await nequiAuth(
+      this.clientId,
+      this.clientSecret,
+      this.authUri,
+    );
 
     if (NequiError.isNequiError(authenticate)) {
       throw NequiError.from(authenticate);
@@ -84,7 +97,7 @@ export class Nequi {
           return [
             NequiError.from({
               name:
-                req.status === 403 ? "invalid_api_Key" : "application_error",
+                req.status === 403 ? "invalid_api_key" : "application_error",
               message: errJson?.message || req.statusText,
               status: req.status,
             }),

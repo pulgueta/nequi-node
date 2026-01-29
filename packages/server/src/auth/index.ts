@@ -1,13 +1,16 @@
-import { URLS } from "@/constants";
 import { NequiError } from "@/error";
 import { AuthResponseSchema } from "@/schemas/auth";
 import { handleValidationError } from "@/utils/validation";
 
-export const nequiAuth = async (clientId: string, clientSecret: string) => {
+export const nequiAuth = async (
+  clientId: string,
+  clientSecret: string,
+  authUri: string,
+) => {
   try {
     const authToken = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
 
-    const req = await fetch(`${URLS.AUTH_URI}?grant_type=client_credentials`, {
+    const req = await fetch(`${authUri}?grant_type=client_credentials`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",

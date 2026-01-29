@@ -1,0 +1,97 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Reports - Nequi SDK Test">
+  <h1>Reports</h1>
+
+  <!-- Get Reports -->
+  <div class="card">
+    <h2>Get Transaction Reports</h2>
+    <form id="form-get-reports">
+      <div class="form-group">
+        <label for="code">Code (NIT)</label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          placeholder="NIT_901049033"
+          required
+        />
+        <p class="hint">Commerce identifier (NIT/CC/CE/RUC)</p>
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" name="startDate" required />
+        <p class="hint">Report start date (YYYY-MM-DD)</p>
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" name="endDate" required />
+        <p class="hint">Report end date (YYYY-MM-DD)</p>
+      </div>
+      <div class="form-group">
+        <label for="format">Format</label>
+        <select id="format" name="format" required>
+          <option value="json">JSON</option>
+          <option value="csv">CSV</option>
+          <option value="pdf">PDF</option>
+        </select>
+        <p class="hint">Output format for the report</p>
+      </div>
+      <button type="submit">Get Reports</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const form = document.getElementById("form-get-reports");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const data = {};
+
+    formData.forEach((value, key) => {
+      if (value) data[key] = value;
+    });
+
+    const messageContainer = form.querySelector(".message-container");
+    const resultContainer = form.querySelector(".result-container");
+
+    if (messageContainer) messageContainer.innerHTML = "";
+    if (resultContainer) resultContainer.innerHTML = "";
+
+    try {
+      const result = await window.nequiApi("/api/reports/get", data);
+
+      if (messageContainer) {
+        messageContainer.innerHTML =
+          '<div class="message ' +
+          (result.success ? "success" : "error") +
+          '">' +
+          (result.success ? "Success" : "Error") +
+          ": " +
+          result.message +
+          "</div>";
+      }
+
+      if (resultContainer && result.data) {
+        resultContainer.innerHTML =
+          '<div class="result">' +
+          JSON.stringify(result.data, null, 2) +
+          "</div>";
+      }
+    } catch (error) {
+      if (messageContainer) {
+        messageContainer.innerHTML =
+          '<div class="message error">Network Error: ' +
+          (error.message || "Unknown error") +
+          "</div>";
+      }
+    }
+  });
+</script>

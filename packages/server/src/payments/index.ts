@@ -1,4 +1,4 @@
-import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
+import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
   CancelUnregisteredPaymentRQSchema,
@@ -39,7 +39,7 @@ export class PushPayment {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.UNREGISTERED}`,
+      `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.UNREGISTERED}`,
       {
         body: JSON.stringify(body),
       },
@@ -69,7 +69,7 @@ export class PushPayment {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.CANCEL_UNREGISTERED}`,
+      `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.CANCEL_UNREGISTERED}`,
       {
         body: JSON.stringify(body),
       },
@@ -99,7 +99,7 @@ export class PushPayment {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.STATUS}`,
+      `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.STATUS}`,
       {
         body: JSON.stringify(body),
       },
@@ -129,7 +129,7 @@ export class PushPayment {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.PAYMENT_PUSH.REVERT}`,
+      `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.REVERT}`,
       {
         body: JSON.stringify(body),
       },

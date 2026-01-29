@@ -1,4 +1,4 @@
-import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
+import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
   GenerateCodeQRRQSchema,
@@ -63,7 +63,7 @@ export class GenerateQR {
       { getStatusPaymentRQ: validated },
     );
 
-    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.STATUS}`, {
+    return this.nequi.post(`${this.nequi.basePath}${ENDPOINTS.QR.STATUS}`, {
       body: JSON.stringify(body),
     });
   }
@@ -90,7 +90,7 @@ export class GenerateQR {
       { reversionRQ: validated },
     );
 
-    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.REVERT}`, {
+    return this.nequi.post(`${this.nequi.basePath}${ENDPOINTS.QR.REVERT}`, {
       body: JSON.stringify(body),
     });
   }

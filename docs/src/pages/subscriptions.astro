@@ -1,0 +1,264 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Subscriptions - Nequi SDK Test">
+  <h1>Subscriptions</h1>
+
+  <!-- Create Subscription -->
+  <div class="card">
+    <h2>Create Subscription</h2>
+    <form id="form-create-subscription">
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+        <p class="hint">Customer's Nequi phone number</p>
+      </div>
+      <div class="form-group">
+        <label for="code">Code (NIT)</label>
+        <input type="text" id="code" name="code" placeholder="NIT_1" required />
+      </div>
+      <div class="form-group">
+        <label for="name">Subscription Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Monthly Plan"
+          required
+        />
+      </div>
+      <button type="submit">Create Subscription</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Automatic Payment -->
+  <div class="card">
+    <h2>Automatic Payment</h2>
+    <form id="form-automatic-payment">
+      <div class="form-group">
+        <label for="auto-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="auto-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="auto-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="auto-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="auto-value">Value</label>
+        <input
+          type="text"
+          id="auto-value"
+          name="value"
+          placeholder="50000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="auto-token">Subscription Token</label>
+        <input
+          type="text"
+          id="auto-token"
+          name="token"
+          placeholder="Token from createSubscription"
+          required
+        />
+        <p class="hint">Token returned from the subscription creation</p>
+      </div>
+      <div class="form-group">
+        <label for="auto-reference1">Reference 1 (optional)</label>
+        <input type="text" id="auto-reference1" name="reference1" />
+      </div>
+      <div class="form-group">
+        <label for="auto-reference2">Reference 2 (optional)</label>
+        <input type="text" id="auto-reference2" name="reference2" />
+      </div>
+      <div class="form-group">
+        <label for="auto-reference3">Reference 3 (optional)</label>
+        <input type="text" id="auto-reference3" name="reference3" />
+      </div>
+      <button type="submit">Process Payment</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Get Subscription Details -->
+  <div class="card">
+    <h2>Get Subscription Details</h2>
+    <form id="form-get-subscription">
+      <div class="form-group">
+        <label for="get-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="get-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="get-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="get-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="get-token">Subscription Token</label>
+        <input
+          type="text"
+          id="get-token"
+          name="token"
+          placeholder="Token from createSubscription"
+          required
+        />
+      </div>
+      <button type="submit">Get Details</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Reverse Transaction -->
+  <div class="card">
+    <h2>Reverse Subscription Payment</h2>
+    <form id="form-revert-subscription">
+      <div class="form-group">
+        <label for="revert-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="revert-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-value">Value</label>
+        <input
+          type="text"
+          id="revert-value"
+          name="value"
+          placeholder="50000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="revert-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-messageId">Message ID</label>
+        <input
+          type="text"
+          id="revert-messageId"
+          name="messageId"
+          placeholder="Message ID from original transaction"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-type">Type</label>
+        <input
+          type="text"
+          id="revert-type"
+          name="type"
+          value="automaticPayment"
+          readonly
+        />
+        <p class="hint">Must be "automaticPayment" for subscription reversals</p>
+      </div>
+      <button type="submit">Reverse Payment</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const endpoints = {
+    "form-create-subscription": "/api/subscriptions/create",
+    "form-automatic-payment": "/api/subscriptions/payment",
+    "form-get-subscription": "/api/subscriptions/details",
+    "form-revert-subscription": "/api/subscriptions/revert",
+  };
+
+  Object.entries(endpoints).forEach(([formId, endpoint]) => {
+    const form = document.getElementById(formId);
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        if (value) data[key] = value;
+      });
+
+      const messageContainer = form.querySelector(".message-container");
+      const resultContainer = form.querySelector(".result-container");
+
+      if (messageContainer) messageContainer.innerHTML = "";
+      if (resultContainer) resultContainer.innerHTML = "";
+
+      try {
+        const result = await window.nequiApi(endpoint, data);
+
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message ' +
+            (result.success ? "success" : "error") +
+            '">' +
+            (result.success ? "Success" : "Error") +
+            ": " +
+            result.message +
+            "</div>";
+        }
+
+        if (resultContainer && result.data) {
+          resultContainer.innerHTML =
+            '<div class="result">' +
+            JSON.stringify(result.data, null, 2) +
+            "</div>";
+        }
+      } catch (error) {
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message error">Network Error: ' +
+            (error.message || "Unknown error") +
+            "</div>";
+        }
+      }
+    });
+  });
+</script>

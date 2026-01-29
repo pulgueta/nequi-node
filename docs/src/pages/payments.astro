@@ -1,0 +1,232 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Push Payments - Nequi SDK Test">
+  <h1>Push Payments</h1>
+
+  <!-- Create Payment -->
+  <div class="card">
+    <h2>Create Push Payment</h2>
+    <form id="form-create-payment">
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+        <p class="hint">Customer's Nequi phone number</p>
+      </div>
+      <div class="form-group">
+        <label for="code">Code (NIT)</label>
+        <input type="text" id="code" name="code" placeholder="NIT_1" required />
+      </div>
+      <div class="form-group">
+        <label for="value">Value</label>
+        <input
+          type="text"
+          id="value"
+          name="value"
+          placeholder="1000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reference1">Reference 1 (optional)</label>
+        <input type="text" id="reference1" name="reference1" />
+      </div>
+      <div class="form-group">
+        <label for="reference2">Reference 2 (optional)</label>
+        <input type="text" id="reference2" name="reference2" />
+      </div>
+      <div class="form-group">
+        <label for="reference3">Reference 3 (optional)</label>
+        <input type="text" id="reference3" name="reference3" />
+      </div>
+      <button type="submit">Create Payment</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Get Payment Status -->
+  <div class="card">
+    <h2>Get Payment Status</h2>
+    <form id="form-payment-status">
+      <div class="form-group">
+        <label for="codeQR">Code QR / Transaction ID</label>
+        <input
+          type="text"
+          id="codeQR"
+          name="codeQR"
+          placeholder="Transaction ID or QR code"
+          required
+        />
+      </div>
+      <button type="submit">Check Status</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Cancel Payment -->
+  <div class="card">
+    <h2>Cancel Payment</h2>
+    <form id="form-cancel-payment">
+      <div class="form-group">
+        <label for="cancel-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="cancel-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cancel-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="cancel-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cancel-transactionId">Transaction ID</label>
+        <input
+          type="text"
+          id="cancel-transactionId"
+          name="transactionId"
+          placeholder="Transaction ID"
+          required
+        />
+      </div>
+      <button type="submit">Cancel Payment</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Revert Transaction -->
+  <div class="card">
+    <h2>Revert Transaction</h2>
+    <form id="form-revert-payment">
+      <div class="form-group">
+        <label for="revert-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="revert-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-value">Value</label>
+        <input
+          type="text"
+          id="revert-value"
+          name="value"
+          placeholder="1000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="revert-code"
+          name="code"
+          placeholder="NIT_1"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-messageId">Message ID</label>
+        <input
+          type="text"
+          id="revert-messageId"
+          name="messageId"
+          placeholder="Message ID from original transaction"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="revert-type">Type</label>
+        <input
+          type="text"
+          id="revert-type"
+          name="type"
+          value="unregisteredPayment"
+          required
+        />
+      </div>
+      <button type="submit">Revert Transaction</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const endpoints = {
+    "form-create-payment": "/api/payments/create",
+    "form-payment-status": "/api/payments/status",
+    "form-cancel-payment": "/api/payments/cancel",
+    "form-revert-payment": "/api/payments/revert",
+  };
+
+  Object.entries(endpoints).forEach(([formId, endpoint]) => {
+    const form = document.getElementById(formId);
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        if (value) data[key] = value;
+      });
+
+      const messageContainer = form.querySelector(".message-container");
+      const resultContainer = form.querySelector(".result-container");
+
+      if (messageContainer) messageContainer.innerHTML = "";
+      if (resultContainer) resultContainer.innerHTML = "";
+
+      try {
+        const result = await window.nequiApi(endpoint, data);
+
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message ' +
+            (result.success ? "success" : "error") +
+            '">' +
+            (result.success ? "Success" : "Error") +
+            ": " +
+            result.message +
+            "</div>";
+        }
+
+        if (resultContainer && result.data) {
+          resultContainer.innerHTML =
+            '<div class="result">' +
+            JSON.stringify(result.data, null, 2) +
+            "</div>";
+        }
+      } catch (error) {
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message error">Network Error: ' +
+            (error.message || "Unknown error") +
+            "</div>";
+        }
+      }
+    });
+  });
+</script>

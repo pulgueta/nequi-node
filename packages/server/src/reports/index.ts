@@ -1,4 +1,4 @@
-import { CHANNELS, ENDPOINTS, URLS } from "@/constants";
+import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import { GetReportsRQSchema } from "@/schemas/reports";
 import { buildRequestMessage } from "@/utils/builders";
@@ -31,7 +31,7 @@ export class Reports {
     );
 
     return this.nequi.post(
-      `${URLS.BASE_PATH}${ENDPOINTS.REPORTS.GET_REPORTS}`,
+      `${this.nequi.basePath}${ENDPOINTS.REPORTS.GET_REPORTS}`,
       {
         body: JSON.stringify(body),
       },

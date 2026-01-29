@@ -1,0 +1,212 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Dispersions - Nequi SDK Test">
+  <h1>Dispersions</h1>
+
+  <!-- Create Dispersion -->
+  <div class="card">
+    <h2>Create Dispersion (Send Funds)</h2>
+    <form id="form-create-dispersion">
+      <div class="form-group">
+        <label for="code">Code (NIT)</label>
+        <input
+          type="text"
+          id="code"
+          name="code"
+          placeholder="NIT_440627004_00"
+          required
+        />
+        <p class="hint">Commerce code (NIT/RUC/etc.)</p>
+      </div>
+      <div class="form-group">
+        <label for="trackingID">Tracking ID</label>
+        <input
+          type="text"
+          id="trackingID"
+          name="trackingID"
+          placeholder="PAYROLL-2024-01-001"
+          required
+        />
+        <p class="hint">Your internal tracking/unique ID</p>
+      </div>
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+        <p class="hint">Beneficiary's Nequi phone number</p>
+      </div>
+      <div class="form-group">
+        <label for="value">Value</label>
+        <input
+          type="text"
+          id="value"
+          name="value"
+          placeholder="500000"
+          required
+        />
+        <p class="hint">Amount to disperse (string)</p>
+      </div>
+      <div class="form-group">
+        <label for="reference1">Reference 1 (optional)</label>
+        <input
+          type="text"
+          id="reference1"
+          name="reference1"
+          placeholder="Employee salary"
+        />
+      </div>
+      <div class="form-group">
+        <label for="reference2">Reference 2 (optional)</label>
+        <input
+          type="text"
+          id="reference2"
+          name="reference2"
+          placeholder="January 2024"
+        />
+      </div>
+      <div class="form-group">
+        <label for="reference3">Reference 3 (optional)</label>
+        <input
+          type="text"
+          id="reference3"
+          name="reference3"
+          placeholder="Department: IT"
+        />
+      </div>
+      <button type="submit">Create Dispersion</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Reverse Dispersion -->
+  <div class="card">
+    <h2>Reverse Dispersion</h2>
+    <form id="form-reverse-dispersion">
+      <div class="form-group">
+        <label for="reverse-code">Code (NIT)</label>
+        <input
+          type="text"
+          id="reverse-code"
+          name="code"
+          placeholder="NIT_440627004_00"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-trackingID">Tracking ID</label>
+        <input
+          type="text"
+          id="reverse-trackingID"
+          name="trackingID"
+          placeholder="Same tracking ID from original dispersion"
+          required
+        />
+        <p class="hint">Same tracking ID used in the original dispersion</p>
+      </div>
+      <div class="form-group">
+        <label for="reverse-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="reverse-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-value">Value</label>
+        <input
+          type="text"
+          id="reverse-value"
+          name="value"
+          placeholder="500000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-reference1">Reference 1 (optional)</label>
+        <input
+          type="text"
+          id="reverse-reference1"
+          name="reference1"
+          placeholder="Reversal reason"
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-reference2">Reference 2 (optional)</label>
+        <input type="text" id="reverse-reference2" name="reference2" />
+      </div>
+      <div class="form-group">
+        <label for="reverse-reference3">Reference 3 (optional)</label>
+        <input type="text" id="reverse-reference3" name="reference3" />
+      </div>
+      <button type="submit">Reverse Dispersion</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const endpoints = {
+    "form-create-dispersion": "/api/dispersions/create",
+    "form-reverse-dispersion": "/api/dispersions/revert",
+  };
+
+  Object.entries(endpoints).forEach(([formId, endpoint]) => {
+    const form = document.getElementById(formId);
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        if (value) data[key] = value;
+      });
+
+      const messageContainer = form.querySelector(".message-container");
+      const resultContainer = form.querySelector(".result-container");
+
+      if (messageContainer) messageContainer.innerHTML = "";
+      if (resultContainer) resultContainer.innerHTML = "";
+
+      try {
+        const result = await window.nequiApi(endpoint, data);
+
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message ' +
+            (result.success ? "success" : "error") +
+            '">' +
+            (result.success ? "Success" : "Error") +
+            ": " +
+            result.message +
+            "</div>";
+        }
+
+        if (resultContainer && result.data) {
+          resultContainer.innerHTML =
+            '<div class="result">' +
+            JSON.stringify(result.data, null, 2) +
+            "</div>";
+        }
+      } catch (error) {
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message error">Network Error: ' +
+            (error.message || "Unknown error") +
+            "</div>";
+        }
+      }
+    });
+  });
+</script>
