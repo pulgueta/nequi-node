@@ -1,6 +1,6 @@
 # Nequi Node.js SDK
 
-TypeScript SDK for integrating with Nequi Conecta API.
+TypeScript SDK for integrating with Nequi API.
 
 ## Installation
 
@@ -14,10 +14,10 @@ npm install @pulgueta/nequi-node
 import { Nequi } from "@pulgueta/nequi-node";
 
 const nequi = new Nequi({
-  apiKey: "your-api-key",           // Required: API key from Nequi Conecta
-  clientId: "your-client-id",        // Required: Client ID from Nequi Conecta
+  apiKey: "your-api-key", // Required: API key from Nequi Conecta
+  clientId: "your-client-id", // Required: Client ID from Nequi Conecta
   clientSecret: "your-client-secret", // Required: Client secret from Nequi Conecta
-  env: "development",                 // Optional: "development" | "production" (default: "development")
+  env: "development", // Optional: "development" | "production" (default: "development")
 });
 ```
 
@@ -210,9 +210,9 @@ import { NequiError } from "@pulgueta/nequi-node";
 
 // Check if error is NequiError
 if (NequiError.isNequiError(error)) {
-  console.error(error.name);    // Error code name
+  console.error(error.name); // Error code name
   console.error(error.message); // Error message
-  console.error(error.status);  // HTTP status code
+  console.error(error.status); // HTTP status code
 }
 ```
 
