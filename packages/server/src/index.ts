@@ -11,7 +11,7 @@ export { GenerateQR } from "./qr";
 export { Reports } from "./reports";
 export * from "./schemas";
 export { Subscription } from "./subscriptions";
-export type { NequiOptions, SdkResponse } from "./types";
+export type { SdkResponse } from "./types";
 export { buildRequestHeader, buildRequestMessage } from "./utils/builders";
 export {
   handleValidationError,

@@ -1,5 +1,3 @@
-import type { z } from "zod";
-
 import { nequiAuth } from "@/auth";
 import { getUrls } from "@/constants";
 import { Dispersions } from "@/dispersions";
@@ -9,8 +7,14 @@ import { GenerateQR } from "@/qr";
 import { Reports } from "@/reports";
 import { Subscription } from "@/subscriptions";
 import type { SdkResponse } from "@/types";
-import { NequiOptionsSchema } from "@/types";
 import { handleValidationError } from "@/utils/validation";
+
+export interface NequiOptions {
+  apiKey: string;
+  clientId: string;
+  clientSecret: string;
+  env: "development" | "production";
+}
 
 export class Nequi {
   private readonly apiKey: string;
@@ -26,21 +30,11 @@ export class Nequi {
   readonly dispersions: Dispersions;
   readonly reports: Reports;
 
-  constructor(opts: z.input<typeof NequiOptionsSchema>) {
-    const parsed = NequiOptionsSchema.safeParse(opts);
-
-    if (!parsed.success) {
-      throw NequiError.from({
-        message: `[Nequi SDK]: Invalid configuration - ${parsed.error.issues.map((e) => e.message).join(", ")}`,
-        name: "missing_required_field",
-        status: 422,
-      });
-    }
-
-    this.apiKey = parsed.data.apiKey;
-    this.clientId = parsed.data.clientId;
-    this.clientSecret = parsed.data.clientSecret;
-    this.env = parsed.data.env;
+  constructor(opts: NequiOptions) {
+    this.apiKey = opts.apiKey;
+    this.clientId = opts.clientId;
+    this.clientSecret = opts.clientSecret;
+    this.env = opts.env;
 
     const urls = getUrls(this.env);
     this.basePath = urls.BASE_PATH;
