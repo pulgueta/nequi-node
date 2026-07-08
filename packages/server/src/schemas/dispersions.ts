@@ -5,17 +5,26 @@ import { createResponseSchema } from "./common";
 
 export const DocumentTypeSchema = z.enum(["CC", "TI", "CE", "PT"]);
 
-export const DisperseFundsRQSchema = z.object({
-  code: z.string().min(1, "code is required"),
-  trackingID: z.string().min(1, "trackingID is required"),
-  phoneNumber: z.string().min(1, "phoneNumber is required"),
-  value: z.string().min(1, "value is required"),
-  documentType: DocumentTypeSchema.optional(),
-  documentNumber: z.string().optional(),
-  reference1: z.string().min(1, "reference1 is required").max(45),
-  reference2: z.string().min(1, "reference2 is required").max(45),
-  reference3: z.string().min(1, "reference3 is required").max(45),
-});
+export const DisperseFundsRQSchema = z
+  .object({
+    code: z.string().min(1, "code is required"),
+    trackingID: z.string().min(1, "trackingID is required"),
+    phoneNumber: z.string().min(1, "phoneNumber is required"),
+    value: z.string().min(1, "value is required"),
+    documentType: DocumentTypeSchema.optional(),
+    documentNumber: z.string().min(1).optional(),
+    reference1: z.string().min(1, "reference1 is required").max(45),
+    reference2: z.string().min(1, "reference2 is required").max(45),
+    reference3: z.string().min(1, "reference3 is required").max(45),
+  })
+  .refine(
+    (data) => Boolean(data.documentType) === Boolean(data.documentNumber),
+    {
+      message:
+        "documentType and documentNumber must both be provided or both omitted",
+      path: ["documentNumber"],
+    },
+  );
 
 export const DisperseFundsRSSchema = z.object({}).optional();
 
