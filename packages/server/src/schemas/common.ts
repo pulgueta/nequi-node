@@ -11,7 +11,7 @@ export const DestinationSchema = z.object({
 export const RequestHeaderSchema = z.object({
   Channel: z.string(),
   RequestDate: z.string(),
-  MessageID: z.string().uuid(),
+  MessageID: z.string(),
   ClientID: z.string(),
   Destination: DestinationSchema,
 });

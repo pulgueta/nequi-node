@@ -6,6 +6,7 @@ export const nequiAuth = async (
   clientId: string,
   clientSecret: string,
   authUri: string,
+  signal?: AbortSignal,
 ) => {
   try {
     const authToken = `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`;
@@ -17,14 +18,20 @@ export const nequiAuth = async (
         Authorization: authToken,
         Accept: "application/json",
       },
+      signal,
     });
 
     if (!req.ok) {
-      return NequiError.from({
-        message: "[Nequi SDK]: Authentication failed - Invalid credentials",
-        name: "authentication_error",
-        status: req.status,
-      });
+      const raw = await req.text().catch(() => undefined);
+
+      return NequiError.from(
+        {
+          message: "[Nequi SDK]: Authentication failed - Invalid credentials",
+          name: "authentication_error",
+          status: req.status,
+        },
+        { raw },
+      );
     }
 
     const json = await req.json();
@@ -48,8 +55,16 @@ export const nequiAuth = async (
       return error;
     }
 
+    if (error instanceof Error && error.name === "TimeoutError") {
+      return NequiError.from({
+        message: "[Nequi SDK]: Authentication request timed out",
+        name: "request_timeout",
+        status: 408,
+      });
+    }
+
     return NequiError.from({
-      message: "[Nequi SDK]: Authentication failed",
+      message: `[Nequi SDK]: Authentication failed${error instanceof Error ? ` - ${error.message}` : ""}`,
       name: "authentication_error",
       status: 401,
     });

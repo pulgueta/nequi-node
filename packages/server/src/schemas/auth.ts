@@ -1,4 +1,3 @@
-import type { output } from "zod";
 import { z } from "zod";
 
 // ============================================================================
@@ -7,10 +6,13 @@ import { z } from "zod";
 
 export const AuthResponseSchema = z.object({
   access_token: z.string(),
-  token_type: z.literal("Bearer"),
+  // Docs say token_type is "typically Bearer", not a guaranteed literal
+  token_type: z.string(),
   expires_in: z
     .union([z.string(), z.number()])
-    .transform((val) => (typeof val === "string" ? parseInt(val, 10) : val)),
+    .transform((val) => (typeof val === "string" ? parseInt(val, 10) : val))
+    // Guard against NaN/negative values silently producing an invalid expiry
+    .pipe(z.number().int().positive()),
 });
 
 // ============================================================================
