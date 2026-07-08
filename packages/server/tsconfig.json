@@ -17,8 +17,9 @@
     "rootDir": "src",
     "outDir": "dist",
     "types": ["node"],
+    // tsup's DTS build synthesizes `baseUrl` from the `@/*` aliases below, which
+    // TS 6.0 flags as deprecated. Remove once the aliases become relative imports.
     "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
