@@ -24,7 +24,7 @@
   "homepage": "https://github.com/pulgueta/nequi-node",
   "repository": {
     "type": "git",
-    "url": "https://github.com/pulgueta/nequi-node.git"
+    "url": "git+https://github.com/pulgueta/nequi-node.git"
   },
   "bugs": {
     "url": "https://github.com/pulgueta/nequi-node/issues"
