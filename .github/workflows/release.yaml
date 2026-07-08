@@ -31,7 +31,7 @@ jobs:
 
       - name: Build package
         working-directory: packages/server
-        run: bun run build
+        run: pnpm run build
 
       - name: Semantic release
         uses: cycjimmy/semantic-release-action@v4
