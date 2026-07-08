@@ -16,6 +16,8 @@
     "emitDeclarationOnly": true,
     "rootDir": "src",
     "outDir": "dist",
+    "types": ["node"],
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
