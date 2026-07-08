@@ -18,8 +18,11 @@ const nequi = new Nequi({
   clientId: "your-client-id", // Required: Client ID from Nequi
   clientSecret: "your-client-secret", // Required: Client secret from Nequi
   env: "development", // Optional: "development" | "production" (default: "development")
+  timeoutMs: 30000, // Optional: per-request timeout in milliseconds (default: 30000)
 });
 ```
+
+The SDK caches the OAuth token and refreshes it automatically before it expires, so you don't pay an extra auth round-trip on every call.
 
 ## Error Handling
 
@@ -135,6 +138,13 @@ const [error, details] = await nequi.subscription.getSubscription({
   token: subscription.token,
 });
 
+// Cancel subscription
+const [error, result] = await nequi.subscription.cancelSubscription({
+  phoneNumber: "3998764643",
+  code: "NIT_1",
+  token: subscription.token,
+});
+
 // Reverse subscription transaction
 const [error, result] = await nequi.subscription.reverseTransaction({
   phoneNumber: "3998764643",
@@ -156,9 +166,11 @@ const [error, result] = await nequi.dispersions.createDispersion({
   trackingID: "DAN123456789",
   phoneNumber: "3998764643",
   value: "1000",
-  reference1: "Payroll",
-  reference2: "optional",
-  reference3: "optional",
+  documentType: "CC", // Optional: "CC" | "TI" | "CE" | "PT"
+  documentNumber: "1234567890", // Optional, requires documentType
+  reference1: "Payroll", // Required, max 45 chars
+  reference2: "reference", // Required, max 45 chars
+  reference3: "reference", // Required, max 45 chars
 });
 
 // Reverse dispersion
@@ -167,9 +179,9 @@ const [error, result] = await nequi.dispersions.reverseDispersion({
   trackingID: "DAN123456789",
   phoneNumber: "3998764643",
   value: "1000",
-  reference1: "Payroll",
-  reference2: "optional",
-  reference3: "optional",
+  reference1: "Payroll", // Required, max 45 chars
+  reference2: "reference", // Required, max 45 chars
+  reference3: "reference", // Required, max 45 chars
 });
 ```
 
@@ -183,8 +195,49 @@ const [error, reports] = await nequi.reports.getReports({
   code: "NIT_901049033",
   startDate: "2018-09-01",
   endDate: "2018-09-09",
-  format: "json", // "json" | "csv" | "pdf"
+  format: "json", // "json" | "csv" | "pdf" (case-insensitive)
 });
+```
+
+### Gift Codes (Códigos Plata)
+
+Generate gift codes and reverse redemptions.
+
+```typescript
+// Generate a gift code
+const [error, code] = await nequi.giftCodes.generateCode({
+  commerceCode: "NIT_1",
+  value: "2000",
+  reference1: "Gift for you",
+  lifeTime: "12", // Months
+  // Optional assignment fields:
+  documentType: "CC", // "CC" | "TI" | "CE" | "PT"
+  documentNumber: "1234567890",
+  email: "user@example.com",
+  phoneNumber: "3998764643",
+  contactEmail: "support@commerce.com",
+});
+
+// Reverse a redemption
+const [error, result] = await nequi.giftCodes.reverseRedemption({
+  commerceCode: "NIT_1",
+  phoneNumber: "3998764643",
+  giftCode: "KM9Q6JESKZ5X",
+});
+```
+
+## Payment Status Constants
+
+Values returned in `getStatusPaymentRS.status` for QR and push payments:
+
+```typescript
+import { PAYMENT_STATUS } from "@pulgueta/nequi-node";
+
+PAYMENT_STATUS.PENDING; // "33"
+PAYMENT_STATUS.COMPLETED; // "35"
+PAYMENT_STATUS.FAILED; // "71"
+PAYMENT_STATUS.EXPIRED; // "10-454"
+PAYMENT_STATUS.CANCELLED_OR_REJECTED; // "10-455"
 ```
 
 ## Types
@@ -213,7 +266,14 @@ if (NequiError.isNequiError(error)) {
   console.error(error.name); // Error code name
   console.error(error.message); // Error message
   console.error(error.status); // HTTP status code
+  console.error(error.apiStatusCode); // Nequi API status code (e.g. "20-08A"), if any
+  console.error(error.raw); // Raw Nequi response body — may contain user data, redact before logging
 }
+```
+
+Nequi reports many failures inside an HTTP 200 response (`ResponseHeader.Status.StatusCode !== "0"`). The SDK detects these and returns them as an `api_error` with the domain code in `apiStatusCode`, so a failed payment is never mistaken for a successful one.
+
+```typescript
 ```
 
 ## Advanced Usage

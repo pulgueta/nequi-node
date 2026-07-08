@@ -3,7 +3,12 @@ import { z } from "zod";
 
 import { createResponseSchema } from "./common";
 
-export const ReportFormatSchema = z.enum(["json", "csv", "pdf"]);
+// Docs list the formats with mixed casing (JSON, csv, PDF); normalize to
+// lowercase, which matches the documented example value
+export const ReportFormatSchema = z
+  .string()
+  .transform((value) => value.toLowerCase())
+  .pipe(z.enum(["json", "csv", "pdf"]));
 
 export const GetReportsRQSchema = z.object({
   code: z.string().min(1, "code is required"),
@@ -40,3 +45,4 @@ export const GetReportsResponseSchema =
   createResponseSchema(GetReportsRSSchema);
 
 export type GetReportsRQ = output<typeof GetReportsRQSchema>;
+export type GetReportsResponse = output<typeof GetReportsResponseSchema>;

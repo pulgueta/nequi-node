@@ -8,5 +8,7 @@ export default defineConfig({
   minify: true,
   platform: "node",
   treeshake: true,
-  format: "esm",
+  format: ["esm", "cjs"],
+  external: ["zod"],
+  dts: true,
 });

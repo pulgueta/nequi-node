@@ -1,9 +1,15 @@
 import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
+  type AutomaticPaymentResponse,
   AutomaticPaymentRQSchema,
+  type CancelSubscriptionResponse,
+  CancelSubscriptionRQSchema,
+  type GetSubscriptionResponse,
   GetSubscriptionRQSchema,
+  type NewSubscriptionResponse,
   NewSubscriptionRQSchema,
+  type ReverseSubscriptionTransactionResponse,
   ReverseSubscriptionTransactionRQSchema,
 } from "@/schemas/subscriptions";
 import { buildRequestMessage } from "@/utils/builders";
@@ -38,7 +44,7 @@ export class Subscription {
       { automaticPaymentRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<AutomaticPaymentResponse>(
       `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.AUTOMATIC_PAYMENT}`,
       {
         body: JSON.stringify(body),
@@ -68,7 +74,7 @@ export class Subscription {
       { newSubscriptionRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<NewSubscriptionResponse>(
       `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.CREATE_SUBSCRIPTION}`,
       {
         body: JSON.stringify(body),
@@ -91,6 +97,8 @@ export class Subscription {
       this.clientId,
       {
         ServiceName: "SubscriptionPaymentService",
+        // The official spec's request example shows the typo "getubscription"
+        // and the response shows "Subscription"; the canonical spelling is used
         ServiceOperation: "getSubscription",
         ServiceRegion: "C001",
         ServiceVersion: "1.0.0",
@@ -98,8 +106,38 @@ export class Subscription {
       { getSubscriptionRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<GetSubscriptionResponse>(
       `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.GET_SUBSCRIPTION}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
+  }
+
+  async cancelSubscription(cancelSubscriptionRQ: unknown) {
+    const [error, validated] = safeParse(
+      CancelSubscriptionRQSchema,
+      cancelSubscriptionRQ,
+    );
+
+    if (error) {
+      return [error, null] as const;
+    }
+
+    const body = buildRequestMessage(
+      CHANNELS.SUBSCRIPTION,
+      this.clientId,
+      {
+        ServiceName: "SubscriptionPaymentService",
+        ServiceOperation: "cancelSubscription",
+        ServiceRegion: "C001",
+        ServiceVersion: "1.0.0",
+      },
+      { cancelSubscriptionRQ: validated },
+    );
+
+    return this.nequi.post<CancelSubscriptionResponse>(
+      `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.CANCEL_SUBSCRIPTION}`,
       {
         body: JSON.stringify(body),
       },
@@ -128,7 +166,7 @@ export class Subscription {
       { reversionRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<ReverseSubscriptionTransactionResponse>(
       `${this.nequi.basePath}${ENDPOINTS.SUBSCRIPTION.REVERSE_TRANSACTION}`,
       {
         body: JSON.stringify(body),

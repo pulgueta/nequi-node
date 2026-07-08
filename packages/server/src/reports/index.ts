@@ -1,6 +1,6 @@
 import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
-import { GetReportsRQSchema } from "@/schemas/reports";
+import { type GetReportsResponse, GetReportsRQSchema } from "@/schemas/reports";
 import { buildRequestMessage } from "@/utils/builders";
 import { safeParse } from "@/utils/validation";
 
@@ -30,7 +30,7 @@ export class Reports {
       { getReportsRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<GetReportsResponse>(
       `${this.nequi.basePath}${ENDPOINTS.REPORTS.GET_REPORTS}`,
       {
         body: JSON.stringify(body),

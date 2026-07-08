@@ -5,7 +5,7 @@
   "license": "MIT",
   "author": {
     "name": "Andrés Rodríguez",
-    "email": "roariasaf@gmail.com",
+    "email": "arodriguez@pulgueta.com",
     "url": "https://github.com/pulgueta"
   },
   "publishConfig": {
@@ -31,25 +31,31 @@
   },
   "type": "module",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=24"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsc --noEmit && tsup",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.6",
+    "@types/node": "^24.13.2",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
