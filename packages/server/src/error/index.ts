@@ -37,8 +37,13 @@ export class NequiError extends Error implements ErrorResponse {
     return new NequiError(error.message, error.name, status, extras);
   }
 
-  static isNequiError(error: any): error is NequiError {
-    return error instanceof NequiError || error?.[NEQUI_ERROR_BRAND] === true;
+  static isNequiError(error: unknown): error is NequiError {
+    return (
+      error instanceof NequiError ||
+      (typeof error === "object" &&
+        error !== null &&
+        (error as { [NEQUI_ERROR_BRAND]?: boolean })[NEQUI_ERROR_BRAND] === true)
+    );
   }
 
   toJSON() {
