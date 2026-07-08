@@ -27,9 +27,9 @@ export const GetQRStatusPaymentRQSchema = z.object({
 });
 
 export const QROriginMoneySchema = z.object({
-  name: z.string(),
-  pocketType: z.string(),
-  value: z.string(),
+  name: z.string().optional(),
+  pocketType: z.string().optional(),
+  value: z.string().optional(),
 });
 
 export const GetQRStatusPaymentRSSchema = z.object({
@@ -55,8 +55,9 @@ export const ReverseQRTransactionRQSchema = z.object({
   code: z.string().min(1, "code is required"),
 });
 
+// The API returns reversionRS as an empty string in the documented examples
 export const ReverseQRTransactionRSSchema = z.object({
-  reversionRS: z.object({}).optional(),
+  reversionRS: z.union([z.object({}), z.literal("")]).optional(),
 });
 
 export const ReverseQRTransactionResponseSchema = createResponseSchema(
@@ -67,4 +68,13 @@ export type GenerateCodeQRRQ = output<typeof GenerateCodeQRRQSchema>;
 export type GetQRStatusPaymentRQ = output<typeof GetQRStatusPaymentRQSchema>;
 export type ReverseQRTransactionRQ = output<
   typeof ReverseQRTransactionRQSchema
+>;
+export type GenerateCodeQRResponse = output<
+  typeof GenerateCodeQRResponseSchema
+>;
+export type GetQRStatusPaymentResponse = output<
+  typeof GetQRStatusPaymentResponseSchema
+>;
+export type ReverseQRTransactionResponse = output<
+  typeof ReverseQRTransactionResponseSchema
 >;

@@ -25,12 +25,13 @@ export const ENDPOINTS = {
   SUBSCRIPTION: {
     AUTOMATIC_PAYMENT:
       "/subscriptions/v2/-services-subscriptionpaymentservice-automaticpayment",
-    STATUS_PAYMENT:
-      "/subscriptions/v2/-services-subscriptionpaymentservice-getstatuspayment",
     CREATE_SUBSCRIPTION:
       "/subscriptions/v2/-services-subscriptionpaymentservice-newsubscription",
     GET_SUBSCRIPTION:
       "/subscriptions/v2/-services-subscriptionpaymentservice-getsubscription",
+    // Per the official spec this path has no leading hyphen segment
+    CANCEL_SUBSCRIPTION:
+      "/subscriptions/v2/services-subscriptionpaymentservice-cancelsubscription",
     REVERSE_TRANSACTION:
       "/subscriptions/v2/-services-reverseservices-reversetransaction",
   },
@@ -43,6 +44,11 @@ export const ENDPOINTS = {
   REPORTS: {
     GET_REPORTS: "/partners/v2/-services-reportsservice-getreports",
   },
+  GIFT_CODES: {
+    GENERATE_CODE: "/giftcodes/v2/-services-giftcodeservices-generatecode",
+    REVERSE_REDEMPTION:
+      "/giftcodes/v2/-services-giftcodeservices-reverseredemption",
+  },
 } as const;
 
 export const CHANNELS = {
@@ -51,4 +57,14 @@ export const CHANNELS = {
   SUBSCRIPTION: "PDA05-C001",
   DISPERSIONS: "GLK06-C001",
   REPORTS: "MF-001",
+  GIFT_CODES: "MF-001",
+} as const;
+
+// Values returned in getStatusPaymentRS.status (QR and push payments)
+export const PAYMENT_STATUS = {
+  PENDING: "33",
+  COMPLETED: "35",
+  FAILED: "71",
+  EXPIRED: "10-454",
+  CANCELLED_OR_REJECTED: "10-455",
 } as const;

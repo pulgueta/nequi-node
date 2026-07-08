@@ -41,9 +41,9 @@ export const GetStatusPaymentRQSchema = z.object({
 });
 
 export const OriginMoneySchema = z.object({
-  name: z.string(),
-  pocketType: z.string(),
-  value: z.string(),
+  name: z.string().optional(),
+  pocketType: z.string().optional(),
+  value: z.string().optional(),
 });
 
 export const GetStatusPaymentRSSchema = z.object({
@@ -67,11 +67,13 @@ export const RevertTransactionRQSchema = z.object({
   value: z.string().min(1, "value is required"),
   code: z.string().min(1, "code is required"),
   messageId: z.string().min(1, "messageId is required"),
-  type: z.string().min(1, "type is required"),
+  // "payment" is the only value documented for push-payment reversals
+  type: z.literal("payment"),
 });
 
+// The API returns reversionRS as an empty string in the documented examples
 export const RevertTransactionRSSchema = z.object({
-  reversionRS: z.object({}).optional(),
+  reversionRS: z.union([z.object({}), z.literal("")]).optional(),
 });
 
 export const RevertTransactionResponseSchema = createResponseSchema(
@@ -84,3 +86,15 @@ export type CancelUnregisteredPaymentRQ = output<
 >;
 export type GetStatusPaymentRQ = output<typeof GetStatusPaymentRQSchema>;
 export type RevertTransactionRQ = output<typeof RevertTransactionRQSchema>;
+export type UnregisteredPaymentResponse = output<
+  typeof UnregisteredPaymentResponseSchema
+>;
+export type CancelUnregisteredPaymentResponse = output<
+  typeof CancelUnregisteredPaymentResponseSchema
+>;
+export type GetStatusPaymentResponse = output<
+  typeof GetStatusPaymentResponseSchema
+>;
+export type RevertTransactionResponse = output<
+  typeof RevertTransactionResponseSchema
+>;

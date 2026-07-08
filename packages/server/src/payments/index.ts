@@ -1,9 +1,13 @@
 import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
+  type CancelUnregisteredPaymentResponse,
   CancelUnregisteredPaymentRQSchema,
+  type GetStatusPaymentResponse,
   GetStatusPaymentRQSchema,
+  type RevertTransactionResponse,
   RevertTransactionRQSchema,
+  type UnregisteredPaymentResponse,
   UnregisteredPaymentRQSchema,
 } from "@/schemas/payments";
 import { buildRequestMessage } from "@/utils/builders";
@@ -38,7 +42,7 @@ export class PushPayment {
       { unregisteredPaymentRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<UnregisteredPaymentResponse>(
       `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.UNREGISTERED}`,
       {
         body: JSON.stringify(body),
@@ -68,7 +72,7 @@ export class PushPayment {
       { cancelUnregisteredPaymentRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<CancelUnregisteredPaymentResponse>(
       `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.CANCEL_UNREGISTERED}`,
       {
         body: JSON.stringify(body),
@@ -98,7 +102,7 @@ export class PushPayment {
       { getStatusPaymentRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<GetStatusPaymentResponse>(
       `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.STATUS}`,
       {
         body: JSON.stringify(body),
@@ -128,7 +132,7 @@ export class PushPayment {
       { reversionRQ: validated },
     );
 
-    return this.nequi.post(
+    return this.nequi.post<RevertTransactionResponse>(
       `${this.nequi.basePath}${ENDPOINTS.PAYMENT_PUSH.REVERT}`,
       {
         body: JSON.stringify(body),

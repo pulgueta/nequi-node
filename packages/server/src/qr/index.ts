@@ -1,8 +1,11 @@
 import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
+  type GenerateCodeQRResponse,
   GenerateCodeQRRQSchema,
+  type GetQRStatusPaymentResponse,
   GetQRStatusPaymentRQSchema,
+  type ReverseQRTransactionResponse,
   ReverseQRTransactionRQSchema,
 } from "@/schemas/qr";
 import { buildRequestMessage } from "@/utils/builders";
@@ -37,9 +40,12 @@ export class GenerateQR {
       { generateCodeQRRQ: validated },
     );
 
-    return this.nequi.post(`${URLS.BASE_PATH}${ENDPOINTS.QR.GENERATE}`, {
-      body: JSON.stringify(body),
-    });
+    return this.nequi.post<GenerateCodeQRResponse>(
+      `${this.nequi.basePath}${ENDPOINTS.QR.GENERATE}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   async getStatus(qrValue: unknown) {
@@ -63,9 +69,12 @@ export class GenerateQR {
       { getStatusPaymentRQ: validated },
     );
 
-    return this.nequi.post(`${this.nequi.basePath}${ENDPOINTS.QR.STATUS}`, {
-      body: JSON.stringify(body),
-    });
+    return this.nequi.post<GetQRStatusPaymentResponse>(
+      `${this.nequi.basePath}${ENDPOINTS.QR.STATUS}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   async revert(reversionRQ: unknown) {
@@ -90,8 +99,11 @@ export class GenerateQR {
       { reversionRQ: validated },
     );
 
-    return this.nequi.post(`${this.nequi.basePath}${ENDPOINTS.QR.REVERT}`, {
-      body: JSON.stringify(body),
-    });
+    return this.nequi.post<ReverseQRTransactionResponse>(
+      `${this.nequi.basePath}${ENDPOINTS.QR.REVERT}`,
+      {
+        body: JSON.stringify(body),
+      },
+    );
   }
 }

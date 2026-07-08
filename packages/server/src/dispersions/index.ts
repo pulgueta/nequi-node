@@ -1,7 +1,9 @@
 import { CHANNELS, ENDPOINTS } from "@/constants";
 import type { Nequi } from "@/nequi";
 import {
+  type DisperseFundsResponse,
   DisperseFundsRQSchema,
+  type ReverseDispersionResponse,
   ReverseDispersionRQSchema,
 } from "@/schemas/dispersions";
 import { buildRequestMessage } from "@/utils/builders";
@@ -34,9 +36,11 @@ export class Dispersions {
         ServiceVersion: "1.0.0",
       },
       { disperseFundsRQ: validated },
+      // Dispersions require a 16-digit numeric MessageID
+      "numeric-16",
     );
 
-    return this.nequi.post(
+    return this.nequi.post<DisperseFundsResponse>(
       `${this.nequi.basePath}${ENDPOINTS.DISPERSIONS.CREATE_DISPERSION}`,
       {
         body: JSON.stringify(body),
@@ -64,9 +68,10 @@ export class Dispersions {
         ServiceVersion: "1.0.0",
       },
       { reverseDispersionRQ: validated },
+      "numeric-16",
     );
 
-    return this.nequi.post(
+    return this.nequi.post<ReverseDispersionResponse>(
       `${this.nequi.basePath}${ENDPOINTS.DISPERSIONS.CANCEL_DISPERSION}`,
       {
         body: JSON.stringify(body),
