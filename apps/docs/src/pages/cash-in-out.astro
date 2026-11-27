@@ -267,10 +267,14 @@ import Layout from "../layouts/Layout.astro";
         }
 
         if (resultContainer && result.data) {
-          resultContainer.innerHTML =
-            '<div class="result">' +
-            JSON.stringify(result.data, null, 2) +
-            "</div>";
+          // A string result (for example a PEM key) must show unchanged
+          const output = document.createElement("div");
+          output.className = "result";
+          output.textContent =
+            typeof result.data === "string"
+              ? result.data
+              : JSON.stringify(result.data, null, 2);
+          resultContainer.replaceChildren(output);
         }
       } catch (error) {
         if (messageContainer) {
