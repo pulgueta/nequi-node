@@ -193,7 +193,10 @@ const app = new Elysia({ prefix: "/api" })
     return { success: !err, message: err?.message || "Success", data: result };
   })
 
-  .post("/dispersions/revert", async ({ body }) => {
+  // ============================================================================
+  // Cash-In/Out
+  // ============================================================================
+  .post("/cash-in-out/validate-client", async ({ body }) => {
     const { credentials, data } = parseRequestBody(body);
     const { nequi, error } = getNequiFromRequest(credentials);
 
@@ -201,14 +204,74 @@ const app = new Elysia({ prefix: "/api" })
       return { success: false, message: error || "SDK not configured", data: null };
     }
 
-    const [err, result] = await nequi.dispersions.reverseDispersion(data);
+    const [err, result] = await nequi.cashInOut.validateClient(data);
+    return { success: !err, message: err?.message || "Success", data: result };
+  })
+
+  .post("/cash-in-out/cash-in", async ({ body }) => {
+    const { credentials, data } = parseRequestBody(body);
+    const { nequi, error } = getNequiFromRequest(credentials);
+
+    if (error || !nequi) {
+      return { success: false, message: error || "SDK not configured", data: null };
+    }
+
+    const [err, result] = await nequi.cashInOut.cashIn(data);
+    return { success: !err, message: err?.message || "Success", data: result };
+  })
+
+  .post("/cash-in-out/consult-cash-out", async ({ body }) => {
+    const { credentials, data } = parseRequestBody(body);
+    const { nequi, error } = getNequiFromRequest(credentials);
+
+    if (error || !nequi) {
+      return { success: false, message: error || "SDK not configured", data: null };
+    }
+
+    const [err, result] = await nequi.cashInOut.consultCashOut(data);
+    return { success: !err, message: err?.message || "Success", data: result };
+  })
+
+  .post("/cash-in-out/cash-out", async ({ body }) => {
+    const { credentials, data } = parseRequestBody(body);
+    const { nequi, error } = getNequiFromRequest(credentials);
+
+    if (error || !nequi) {
+      return { success: false, message: error || "SDK not configured", data: null };
+    }
+
+    const [err, result] = await nequi.cashInOut.cashOut(data);
+    return { success: !err, message: err?.message || "Success", data: result };
+  })
+
+  .post("/cash-in-out/public-key", async ({ body }) => {
+    const { credentials } = parseRequestBody(body);
+    const { nequi, error } = getNequiFromRequest(credentials);
+
+    if (error || !nequi) {
+      return { success: false, message: error || "SDK not configured", data: null };
+    }
+
+    const [err, result] = await nequi.cashInOut.getPublicKey();
+    return { success: !err, message: err?.message || "Success", data: result };
+  })
+
+  .post("/cash-in-out/reverse", async ({ body }) => {
+    const { credentials, data } = parseRequestBody(body);
+    const { nequi, error } = getNequiFromRequest(credentials);
+
+    if (error || !nequi) {
+      return { success: false, message: error || "SDK not configured", data: null };
+    }
+
+    const [err, result] = await nequi.cashInOut.reverseTransaction(data);
     return { success: !err, message: err?.message || "Success", data: result };
   })
 
   // ============================================================================
-  // Reports
+  // Partners
   // ============================================================================
-  .post("/reports/get", async ({ body }) => {
+  .post("/partners/validate", async ({ body }) => {
     const { credentials, data } = parseRequestBody(body);
     const { nequi, error } = getNequiFromRequest(credentials);
 
@@ -216,7 +279,7 @@ const app = new Elysia({ prefix: "/api" })
       return { success: false, message: error || "SDK not configured", data: null };
     }
 
-    const [err, result] = await nequi.reports.getReports(data);
+    const [err, result] = await nequi.partners.validatePartner(data);
     return { success: !err, message: err?.message || "Success", data: result };
   });
 

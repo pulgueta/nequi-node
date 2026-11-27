@@ -1,0 +1,285 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Cash-In/Out - Nequi SDK Test">
+  <h1>Cash-In/Out</h1>
+  <p class="hint">
+    These operations use the QA host only. Nequi has not published the
+    production host yet.
+  </p>
+
+  <!-- Validate Client -->
+  <div class="card">
+    <h2>Validate Client</h2>
+    <form id="form-validate-client">
+      <div class="form-group">
+        <label for="validate-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="validate-phoneNumber"
+          name="phoneNumber"
+          placeholder="3451605602"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="validate-value">Value</label>
+        <input
+          type="text"
+          id="validate-value"
+          name="value"
+          placeholder="50000"
+          required
+        />
+      </div>
+      <button type="submit">Validate Client</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Cash In -->
+  <div class="card">
+    <h2>Cash In (Deposit)</h2>
+    <form id="form-cash-in">
+      <div class="form-group">
+        <label for="cashin-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="cashin-phoneNumber"
+          name="phoneNumber"
+          placeholder="3451605602"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cashin-code">Code</label>
+        <input type="text" id="cashin-code" name="code" placeholder="1" required />
+        <p class="hint">Agreement or point code</p>
+      </div>
+      <div class="form-group">
+        <label for="cashin-value">Value</label>
+        <input
+          type="text"
+          id="cashin-value"
+          name="value"
+          placeholder="10000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cashin-origin">Origin</label>
+        <input
+          type="text"
+          id="cashin-origin"
+          name="origin"
+          placeholder="punto-recarga"
+          required
+        />
+        <p class="hint">Origin or channel of the deposit</p>
+      </div>
+      <button type="submit">Cash In</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Consult Cash Out -->
+  <div class="card">
+    <h2>Consult Pending Cash Out</h2>
+    <form id="form-consult-cash-out">
+      <div class="form-group">
+        <label for="consult-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="consult-phoneNumber"
+          name="phoneNumber"
+          placeholder="3001234567"
+          required
+        />
+      </div>
+      <button type="submit">Consult</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Get Public Key -->
+  <div class="card">
+    <h2>Get Public Key</h2>
+    <p class="hint">Use this RSA key to encrypt the Cash Out token.</p>
+    <form id="form-public-key">
+      <button type="submit">Get Public Key</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Cash Out -->
+  <div class="card">
+    <h2>Cash Out (Withdrawal)</h2>
+    <form id="form-cash-out">
+      <div class="form-group">
+        <label for="cashout-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="cashout-phoneNumber"
+          name="phoneNumber"
+          placeholder="3565590227"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cashout-token">Token</label>
+        <input type="text" id="cashout-token" name="token" required />
+        <p class="hint">Token encrypted with the RSA public key</p>
+      </div>
+      <div class="form-group">
+        <label for="cashout-code">Code</label>
+        <input
+          type="text"
+          id="cashout-code"
+          name="code"
+          placeholder="code123"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cashout-value">Value</label>
+        <input
+          type="text"
+          id="cashout-value"
+          name="value"
+          placeholder="10000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="cashout-reference">Reference (optional)</label>
+        <input type="text" id="cashout-reference" name="reference" />
+      </div>
+      <button type="submit">Cash Out</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+
+  <!-- Reverse Transaction -->
+  <div class="card">
+    <h2>Reverse Transaction</h2>
+    <form id="form-reverse-cash">
+      <div class="form-group">
+        <label for="reverse-phoneNumber">Phone Number</label>
+        <input
+          type="text"
+          id="reverse-phoneNumber"
+          name="phoneNumber"
+          placeholder="3451605602"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-code">Code</label>
+        <input
+          type="text"
+          id="reverse-code"
+          name="code"
+          placeholder="123"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-value">Value</label>
+        <input
+          type="text"
+          id="reverse-value"
+          name="value"
+          placeholder="50000"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="reverse-messageId">Message ID</label>
+        <input
+          type="text"
+          id="reverse-messageId"
+          name="messageId"
+          placeholder="1234567890"
+          required
+        />
+        <p class="hint">Message ID of the original transaction</p>
+      </div>
+      <div class="form-group">
+        <label for="reverse-type">Type</label>
+        <select id="reverse-type" name="type" required>
+          <option value="cashout">Cash Out</option>
+          <option value="cashin">Cash In</option>
+        </select>
+      </div>
+      <button type="submit">Reverse Transaction</button>
+      <div class="message-container"></div>
+      <div class="result-container"></div>
+    </form>
+  </div>
+</Layout>
+
+<script is:inline>
+  const endpoints = {
+    "form-validate-client": "/api/cash-in-out/validate-client",
+    "form-cash-in": "/api/cash-in-out/cash-in",
+    "form-consult-cash-out": "/api/cash-in-out/consult-cash-out",
+    "form-public-key": "/api/cash-in-out/public-key",
+    "form-cash-out": "/api/cash-in-out/cash-out",
+    "form-reverse-cash": "/api/cash-in-out/reverse",
+  };
+
+  Object.entries(endpoints).forEach(([formId, endpoint]) => {
+    const form = document.getElementById(formId);
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        if (value) data[key] = value;
+      });
+
+      const messageContainer = form.querySelector(".message-container");
+      const resultContainer = form.querySelector(".result-container");
+
+      if (messageContainer) messageContainer.innerHTML = "";
+      if (resultContainer) resultContainer.innerHTML = "";
+
+      try {
+        const result = await window.nequiApi(endpoint, data);
+
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message ' +
+            (result.success ? "success" : "error") +
+            '">' +
+            (result.success ? "Success" : "Error") +
+            ": " +
+            result.message +
+            "</div>";
+        }
+
+        if (resultContainer && result.data) {
+          resultContainer.innerHTML =
+            '<div class="result">' +
+            JSON.stringify(result.data, null, 2) +
+            "</div>";
+        }
+      } catch (error) {
+        if (messageContainer) {
+          messageContainer.innerHTML =
+            '<div class="message error">Network Error: ' +
+            (error.message || "Unknown error") +
+            "</div>";
+        }
+      }
+    });
+  });
+</script>
