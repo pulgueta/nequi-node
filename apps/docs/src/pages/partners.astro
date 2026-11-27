@@ -2,44 +2,27 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Reports - Nequi SDK Test">
-  <h1>Reports</h1>
+<Layout title="Partners - Nequi SDK Test">
+  <h1>Partners</h1>
 
-  <!-- Get Reports -->
+  <!-- Validate Partner -->
   <div class="card">
-    <h2>Get Transaction Reports</h2>
-    <form id="form-get-reports">
+    <h2>Validate Commerce</h2>
+    <form id="form-validate-partner">
       <div class="form-group">
-        <label for="code">Code (NIT)</label>
-        <input
-          type="text"
-          id="code"
-          name="code"
-          placeholder="NIT_901049033"
-          required
-        />
-        <p class="hint">Commerce identifier (NIT/CC/CE/RUC)</p>
-      </div>
-      <div class="form-group">
-        <label for="startDate">Start Date</label>
-        <input type="date" id="startDate" name="startDate" required />
-        <p class="hint">Report start date (YYYY-MM-DD)</p>
-      </div>
-      <div class="form-group">
-        <label for="endDate">End Date</label>
-        <input type="date" id="endDate" name="endDate" required />
-        <p class="hint">Report end date (YYYY-MM-DD)</p>
-      </div>
-      <div class="form-group">
-        <label for="format">Format</label>
-        <select id="format" name="format" required>
-          <option value="json">JSON</option>
-          <option value="csv">CSV</option>
-          <option value="pdf">PDF</option>
+        <label for="type">ID Type</label>
+        <select id="type" name="type" required>
+          <option value="NIT">NIT</option>
+          <option value="CC">CC</option>
         </select>
-        <p class="hint">Output format for the report</p>
+        <p class="hint">Commerce identification type</p>
       </div>
-      <button type="submit">Get Reports</button>
+      <div class="form-group">
+        <label for="id">ID Number</label>
+        <input type="text" id="id" name="id" placeholder="1" required />
+        <p class="hint">Commerce identification number, without the check digit</p>
+      </div>
+      <button type="submit">Validate Commerce</button>
       <div class="message-container"></div>
       <div class="result-container"></div>
     </form>
@@ -47,7 +30,7 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script is:inline>
-  const form = document.getElementById("form-get-reports");
+  const form = document.getElementById("form-validate-partner");
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -66,7 +49,7 @@ import Layout from "../layouts/Layout.astro";
     if (resultContainer) resultContainer.innerHTML = "";
 
     try {
-      const result = await window.nequiApi("/api/reports/get", data);
+      const result = await window.nequiApi("/api/partners/validate", data);
 
       if (messageContainer) {
         messageContainer.innerHTML =
