@@ -36,23 +36,7 @@ export const GenerateGiftCodeResponseSchema = createResponseSchema(
   GenerateGiftCodeRSSchema,
 );
 
-export const ReverseRedemptionRQSchema = z.object({
-  commerceCode: z.string().min(1, "commerceCode is required"),
-  phoneNumber: z.string().min(1, "phoneNumber is required"),
-  giftCode: z.string().min(1, "giftCode is required"),
-});
-
-export const ReverseRedemptionRSSchema = z.object({}).catchall(z.unknown());
-
-export const ReverseRedemptionResponseSchema = createResponseSchema(
-  ReverseRedemptionRSSchema,
-);
-
 export type GenerateGiftCodeRQ = output<typeof GenerateGiftCodeRQSchema>;
-export type ReverseRedemptionRQ = output<typeof ReverseRedemptionRQSchema>;
 export type GenerateGiftCodeResponse = output<
   typeof GenerateGiftCodeResponseSchema
->;
-export type ReverseRedemptionResponse = output<
-  typeof ReverseRedemptionResponseSchema
 >;

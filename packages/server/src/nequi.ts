@@ -1,11 +1,12 @@
 import { nequiAuth } from "@/auth";
+import { CashInOut } from "@/cashinout";
 import { getUrls } from "@/constants";
 import { Dispersions } from "@/dispersions";
 import { NequiError } from "@/error";
 import { GiftCodes } from "@/giftcodes";
 import { PushPayment } from "@/payments";
+import { Partners } from "@/partners";
 import { GenerateQR } from "@/qr";
-import { Reports } from "@/reports";
 import { Subscription } from "@/subscriptions";
 import type { SdkResponse } from "@/types";
 import { handleValidationError } from "@/utils/validation";
@@ -45,8 +46,9 @@ export class Nequi {
   readonly pushPayment: PushPayment;
   readonly subscription: Subscription;
   readonly dispersions: Dispersions;
-  readonly reports: Reports;
   readonly giftCodes: GiftCodes;
+  readonly cashInOut: CashInOut;
+  readonly partners: Partners;
 
   constructor(opts: NequiOptions) {
     for (const key of ["apiKey", "clientId", "clientSecret"] as const) {
@@ -79,8 +81,9 @@ export class Nequi {
     this.pushPayment = new PushPayment(this);
     this.subscription = new Subscription(this);
     this.dispersions = new Dispersions(this);
-    this.reports = new Reports(this);
     this.giftCodes = new GiftCodes(this);
+    this.cashInOut = new CashInOut(this, urls.CASH_IN_OUT_BASE_PATH);
+    this.partners = new Partners(this);
   }
 
   getClientId() {
@@ -186,7 +189,12 @@ export class Nequi {
         ] as const;
       }
 
-      const data = (await req.json()) as T;
+      // The Cash-In/Out getpublic service returns a PEM file, not JSON
+      const data = (
+        req.headers.get("Content-Type")?.includes("application/x-pem-file")
+          ? await req.text()
+          : await req.json()
+      ) as T;
 
       // Nequi reports API-level failures inside a 200 response:
       // ResponseMessage.ResponseHeader.Status.StatusCode !== "0"

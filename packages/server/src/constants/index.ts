@@ -7,6 +7,10 @@ export const getUrls = (env: "development" | "production") => ({
     env === "development"
       ? "https://oauth.sandbox.nequi.com/oauth2/token"
       : "https://oauth.nequi.com/oauth2/token",
+  // Cash-In/Out uses its own host. The official spec publishes only the QA
+  // host. The production host is not published yet, so it is null.
+  CASH_IN_OUT_BASE_PATH:
+    env === "development" ? "https://cntransactionsqa.nequi.com" : null,
 });
 
 export const ENDPOINTS = {
@@ -38,16 +42,21 @@ export const ENDPOINTS = {
   DISPERSIONS: {
     CREATE_DISPERSION:
       "/dispersions/v2/-services-dispersionservice-dispersefunds",
-    CANCEL_DISPERSION:
-      "/dispersions/v2/-services-dispersionservice-reversedispersion",
-  },
-  REPORTS: {
-    GET_REPORTS: "/partners/v2/-services-reportsservice-getreports",
   },
   GIFT_CODES: {
     GENERATE_CODE: "/giftcodes/v2/-services-giftcodeservices-generatecode",
-    REVERSE_REDEMPTION:
-      "/giftcodes/v2/-services-giftcodeservices-reverseredemption",
+  },
+  // Per the official spec these paths have no "/v2" prefix
+  CASH_IN_OUT: {
+    VALIDATE_CLIENT: "/-services-clientservice-validateclient",
+    CASH_IN: "/-services-cashinservice-cashin",
+    CASH_OUT_CONSULT: "/-services-cashoutservice-cashoutconsult",
+    CASH_OUT: "/-services-cashoutservice-cashout",
+    GET_PUBLIC_KEY: "/-services-keysservice-getpublic",
+    REVERSE_TRANSACTION: "/-services-reverseservices-reversetransaction",
+  },
+  PARTNERS: {
+    VALIDATE: "/partners/v2/-services-partnersservices-validate",
   },
 } as const;
 
@@ -56,8 +65,9 @@ export const CHANNELS = {
   PAYMENT_PUSH: "PNP04-C001",
   SUBSCRIPTION: "PDA05-C001",
   DISPERSIONS: "GLK06-C001",
-  REPORTS: "MF-001",
   GIFT_CODES: "MF-001",
+  CASH_IN_OUT: "PTM01-C001",
+  PARTNERS: "PRT01-C001",
 } as const;
 
 // Values returned in getStatusPaymentRS.status (QR and push payments)
