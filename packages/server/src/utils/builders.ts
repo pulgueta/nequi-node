@@ -5,8 +5,7 @@ import type { Destination } from "@/schemas/common";
 export type MessageIdFormat = "alphanumeric-10" | "numeric-16";
 
 // Nequi constrains MessageID per API: most services expect a 10-char
-// alphanumeric ID, while dispersions (and gift-code reversals) require a
-// 16-digit numeric ID
+// alphanumeric ID, while dispersions require a 16-digit numeric ID
 export const generateMessageId = (
   format: MessageIdFormat = "alphanumeric-10",
 ) => {
