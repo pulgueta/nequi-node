@@ -1,3 +1,86 @@
+# [1.7.0](https://github.com/pulgueta/nequi-node/compare/v.1.6.4...v.1.7.0) (2026-07-08)
+
+
+### Features
+
+* **server:** add gift codes (Códigos Plata) module ([6c969f6](https://github.com/pulgueta/nequi-node/commit/6c969f6))
+
+
+### Bug Fixes
+
+* **server:** align endpoints and schemas with official API specs ([f3bf1da](https://github.com/pulgueta/nequi-node/commit/f3bf1da))
+* **server:** harden auth, request handling and error contract ([21c2175](https://github.com/pulgueta/nequi-node/commit/21c2175))
+* **server:** require documentType and documentNumber together in dispersions ([b636bdc](https://github.com/pulgueta/nequi-node/commit/b636bdc))
+* **lint:** address biome warnings ([806578a](https://github.com/pulgueta/nequi-node/commit/806578a))
+
+
+### Documentation
+
+* **server:** document new options, gift codes and error fields ([60325b5](https://github.com/pulgueta/nequi-node/commit/60325b5))
+
+
+### Build System and CI
+
+* **server:** repair typecheck gate and ship CJS build with types ([71e1587](https://github.com/pulgueta/nequi-node/commit/71e1587))
+* **server:** pin node engine to >=24 ([7bd8644](https://github.com/pulgueta/nequi-node/commit/7bd8644))
+* **workflows:** use pnpm instead of bun ([ca7f412](https://github.com/pulgueta/nequi-node/commit/ca7f412))
+* **release:** enable npm trusted publishing ([cba8571](https://github.com/pulgueta/nequi-node/commit/cba8571))
+* **release:** update semantic release action ([674f807](https://github.com/pulgueta/nequi-node/commit/674f807))
+* **release:** restore package release config ([911ff6b](https://github.com/pulgueta/nequi-node/commit/911ff6b))
+* **release:** avoid release commits ([6ee89d2](https://github.com/pulgueta/nequi-node/commit/6ee89d2))
+
+
+# [1.6.4](https://github.com/pulgueta/nequi-node/compare/v1.6.0...v.1.6.4) (2026-01-29)
+
+
+### Features
+
+* integrate Turbo for task management and add documentation for Nequi SDK ([3d43e4b](https://github.com/pulgueta/nequi-node/commit/3d43e4b))
+
+
+### Code Refactoring
+
+* remove unnecessary schema for main class options ([7288554](https://github.com/pulgueta/nequi-node/commit/7288554))
+
+
+### Documentation
+
+* remove docs that do not exist ([ec9ac2a](https://github.com/pulgueta/nequi-node/commit/ec9ac2a))
+
+
+# [1.6.0](https://github.com/pulgueta/nequi-node/compare/v1.0.0...v1.6.0) (2026-01-28)
+
+
+### Features
+
+* build package with tsup ([fe8f8e0](https://github.com/pulgueta/nequi-node/commit/fe8f8e0))
+* create sandbox app to test sdk ([461155b](https://github.com/pulgueta/nequi-node/commit/461155b))
+
+
+### Bug Fixes
+
+* apply greptile suggestions on base path and auth uri, remove unused env property ([d9e7d67](https://github.com/pulgueta/nequi-node/commit/d9e7d67))
+* fix package versions and out directory ([135a199](https://github.com/pulgueta/nequi-node/commit/135a199))
+
+
+### Code Refactoring
+
+* improve type-safety and validations ([4d7e8a6](https://github.com/pulgueta/nequi-node/commit/4d7e8a6))
+* infer types with zod schemas ([0184c5f](https://github.com/pulgueta/nequi-node/commit/0184c5f))
+
+
+### Documentation
+
+* update docs ([8300d19](https://github.com/pulgueta/nequi-node/commit/8300d19))
+* update README ([360c44e](https://github.com/pulgueta/nequi-node/commit/360c44e))
+
+
+### Build System and CI
+
+* add support for node 18 ([5f54c37](https://github.com/pulgueta/nequi-node/commit/5f54c37))
+* update release workflow ([c506f4a](https://github.com/pulgueta/nequi-node/commit/c506f4a))
+
+
 # 1.0.0 (2024-09-02)
 
 
