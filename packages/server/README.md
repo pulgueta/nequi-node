@@ -172,36 +172,11 @@ const [error, result] = await nequi.dispersions.createDispersion({
   reference2: "reference", // Required, max 45 chars
   reference3: "reference", // Required, max 45 chars
 });
-
-// Reverse dispersion
-const [error, result] = await nequi.dispersions.reverseDispersion({
-  code: "NIT_440627004_00",
-  trackingID: "DAN123456789",
-  phoneNumber: "3998764643",
-  value: "1000",
-  reference1: "Payroll", // Required, max 45 chars
-  reference2: "reference", // Required, max 45 chars
-  reference3: "reference", // Required, max 45 chars
-});
-```
-
-### Reports
-
-Retrieve transaction reports and analytics.
-
-```typescript
-// Get reports
-const [error, reports] = await nequi.reports.getReports({
-  code: "NIT_901049033",
-  startDate: "2018-09-01",
-  endDate: "2018-09-09",
-  format: "json", // "json" | "csv" | "pdf" (case-insensitive)
-});
 ```
 
 ### Gift Codes (Códigos Plata)
 
-Generate gift codes and reverse redemptions.
+Generate gift codes.
 
 ```typescript
 // Generate a gift code
@@ -217,12 +192,65 @@ const [error, code] = await nequi.giftCodes.generateCode({
   phoneNumber: "3998764643",
   contactEmail: "support@commerce.com",
 });
+```
 
-// Reverse a redemption
-const [error, result] = await nequi.giftCodes.reverseRedemption({
-  commerceCode: "NIT_1",
-  phoneNumber: "3998764643",
-  giftCode: "KM9Q6JESKZ5X",
+### Cash-In/Out
+
+Deposit money to Nequi accounts (cash-in) and withdraw money from them (cash-out).
+
+> **Note:** Nequi publishes only the QA host for this API (`https://cntransactionsqa.nequi.com`). The production host is not published yet. When `env` is `"production"`, every Cash-In/Out method returns an `invalid_parameter` error and sends no request.
+
+```typescript
+// Validate a client before a transaction
+const [error, client] = await nequi.cashInOut.validateClient({
+  phoneNumber: "3451605602",
+  value: "50000",
+});
+
+// Deposit money (cash-in)
+const [error, result] = await nequi.cashInOut.cashIn({
+  phoneNumber: "3451605602",
+  code: "1", // Agreement or point code
+  value: "10000",
+  origin: "punto-recarga",
+});
+
+// Make sure that the client has no pending transactions before a cash-out
+const [error, pending] = await nequi.cashInOut.consultCashOut({
+  phoneNumber: "3001234567",
+});
+
+// Get the RSA public key (PEM) to encrypt the cash-out token
+const [error, publicKey] = await nequi.cashInOut.getPublicKey();
+
+// Withdraw money (cash-out)
+const [error, result] = await nequi.cashInOut.cashOut({
+  phoneNumber: "3565590227",
+  token: "<token encrypted with the RSA public key>",
+  code: "code123",
+  value: "10000",
+  reference: "Withdrawal", // Optional
+  // Optional: reference1 to reference6
+});
+
+// Reverse a cash-in or cash-out transaction
+const [error, result] = await nequi.cashInOut.reverseTransaction({
+  phoneNumber: "3451605602",
+  code: "123",
+  value: "50000",
+  messageId: "1234567890", // MessageID of the original transaction
+  type: "cashout", // "cashout" | "cashin"
+});
+```
+
+### Partners
+
+Make sure that a commerce is registered in Nequi Negocios with your product.
+
+```typescript
+const [error, result] = await nequi.partners.validatePartner({
+  type: "NIT", // "NIT" or "CC"
+  id: "1", // Without the check digit
 });
 ```
 
@@ -251,7 +279,8 @@ import type {
   UnregisteredPaymentRQ,
   AutomaticPaymentRQ,
   DisperseFundsRQ,
-  GetReportsRQ,
+  CashInRQ,
+  ValidatePartnerRQ,
   // ... and more
 } from "@pulgueta/nequi-node";
 ```

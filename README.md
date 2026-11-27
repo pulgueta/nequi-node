@@ -9,7 +9,9 @@ A community-driven TypeScript SDK for integrating with Nequi Conecta API in Node
 - ✅ **Push Payments** - Send payment notifications to Nequi app users
 - ✅ **Subscriptions** - Create and manage automatic subscription payments
 - ✅ **Dispersions** - Send payments from your business account to Nequi accounts
-- ✅ **Reports** - Retrieve transaction reports and analytics
+- ✅ **Gift Codes** - Generate Códigos Plata
+- ✅ **Cash-In/Out** - Deposit to and withdraw from Nequi accounts (QA host only; the production host is not published yet)
+- ✅ **Partners** - Make sure that a commerce has access to your product
 - ✅ **Error Handling** - Comprehensive error handling with typed errors
 - ✅ **Validation** - Built-in request validation using Zod schemas
 
